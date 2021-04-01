@@ -1,11 +1,8 @@
 from math import *
 import matplotlib.pyplot as plt
 
-x_up = []
-y_up = []
-
-x_down = []
-y_down = []
+x = []
+y = []
 
 speed = []
 fuel_left = []
@@ -22,8 +19,8 @@ def calculate_g(prev_y, earth_weight):
     return G * earth_weight / (earth_radius + prev_y) ** 2
 
 
-def calculate_speed(cur_rocket_weight, gas_velocity, rocket_weight):
-    return gas_velocity * log1p(cur_rocket_weight / rocket_weight)
+def calculate_speed(ax, ay, t):
+    return sqrt((ax*t)**2 + (ay*t)**2)
 
 
 def calculate_acceleration_x(full_rocket_weight, gas_velocity, burn_velocity, alpha):
@@ -47,51 +44,62 @@ def calculate_y(cur_acceleration_y, cur_time):
 
 
 def graph(alpha, rocket_weight, fuel_weight, gas_velocity, burn_velocity, earth_weight):
-    i = 0
+    time = 0
     ax = 0
     ay = 0
-    plt.plot(earth_x, earth_y)
+
     up_flight_time = int(fuel_weight / burn_velocity)
     rocket_up = False
     for second in range(up_flight_time):
         if second == 0:
-            x_up.append(0)
-            y_up.append(0)
+            x.append(0)
+            y.append(0)
             speed.append(0)
             fuel_left.append(fuel_weight)
         else:
             cur_rocket_weight = rocket_weight + fuel_left[second - 1]
             ax = calculate_acceleration_x(cur_rocket_weight, gas_velocity, burn_velocity, alpha)
-            ay = calculate_acceleration_y(cur_rocket_weight, y_up[second - 1], gas_velocity, burn_velocity, earth_weight,
+            ay = calculate_acceleration_y(cur_rocket_weight, y[second - 1], gas_velocity, burn_velocity, earth_weight,
                                           alpha)
             if calculate_y(ay, second) >= 0:
                 rocket_up = True
-                x_up.append(calculate_x(ax, second))
-                y_up.append(calculate_y(ay, second))
+                x.append(calculate_x(ax, second))
+                y.append(calculate_y(ay, second))
             else:
                 if rocket_up:
                     print("Ракета завершила полёт на %i секунде!" % second)
                     break
-                x_up.append(0)
-                y_up.append(0)
-            speed.append(calculate_speed(cur_rocket_weight, gas_velocity, rocket_weight))
+                x.append(0)
+                y.append(0)
+            speed.append(calculate_speed(ax, ay, second))
             fuel_left.append(calculate_left_fuel(second, fuel_weight, burn_velocity))
     if not rocket_up:
         print("Ракета не взлетела :(")
-    # print(len(x_up), len(y_up))
-    plt.plot(x_up, y_up)
-    # plt.show()
-    if calculate_g(y_up[-1], earth_weight) <= 10**-3:
-        print(calculate_g(y_up[-1], earth_weight), ay)
+
+    if calculate_g(y[-1], earth_weight) <= 10**-3:
         print("Ракета осталась в космосе по завершении своего полёта!")
     else:
-        y_down.append(y_up[-1])
-        x_down.append(x_up[-1])
-        while y_down[-1] > 0:
-            i += 1
-            y_down.append(y_down[-1] - (calculate_g(y_down[-1], earth_weight)) * i)
-            x_down.append(x_down[-1] + i * ax)
-        plt.plot(x_down, y_down)
-    print("Ракета летела", up_flight_time + i, "секунд.")
+        last_x = x[-1]
+        last_y = y[-1]
+        last_speed = speed[-1]
+        while y[-1] > 10**-3:
+            if calculate_g(y[-1], earth_weight) <= 10**-3:
+                print("Ракета осталась в космосе по завершении своего полёта!")
+                break
+            time += 1
+            new_y = last_y + last_speed * sin(alpha) * time - (calculate_g(y[-1], earth_weight) * time**2)/2
+            new_x = last_x + last_speed * cos(alpha) * time
+            new_speed = sqrt((last_speed * sin(alpha) - calculate_g(y[-1], earth_weight) * time)**2 + (last_speed * cos(alpha))**2)
+            y.append(new_y)
+            x.append(new_x)
+            speed.append(new_speed)
+            fuel_left.append(0)
+            # print(new_x, new_y, new_speed, calculate_g(y[-1], earth_weight))
+
+    earth_x = [i for i in range(int(max(x)) + 10 ** 3)]
+    earth_y = [0 for _ in range(int(max(x)) + 10 ** 3)]
+    plt.plot(earth_x, earth_y)
+    plt.plot(x, y)
+    print("Ракета летела", up_flight_time + time, "секунд.")
     plt.show()
 
