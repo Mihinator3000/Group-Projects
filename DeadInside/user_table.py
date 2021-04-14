@@ -22,5 +22,9 @@ class UserTable:
     def update_subscription(self, user_id, status):
         return self.cursor.execute("UPDATE `Users` SET `status_of_subscription` = ? WHERE `user_id` = ?", (status, user_id))
 
+    def get_admin(self, status=True):
+        with self.connection:
+            return self.cursor.execute("SELECT * FROM `Users` WHERE `user_id` = ?", (status,)).fetchall()
+
     def close(self):
         self.connection.close()
