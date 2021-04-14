@@ -16,8 +16,9 @@ class UserTable:
             return bool(len(result))
 
     def add_person(self, user_id):
-        with self.connection:
-            return self.cursor.execute("INSERT INTO `Users` (`user_id`, `status_of_subscription`) VALUES (?,?)", (user_id, False))
+        if not self.subscriber_exists(user_id):
+            with self.connection:
+                return self.cursor.execute("INSERT INTO `Users` (`user_id`, `status_of_subscription`) VALUES (?,?)", (user_id, False))
 
     def add_subscriber(self, user_id, status=True):
         with self.connection:
