@@ -15,6 +15,10 @@ class UserTable:
             result = self.cursor.execute("SELECT * FROM `Users` WHERE `user_id` = ?", (user_id,)).fetchall()
             return bool(len(result))
 
+    def add_person(self, user_id):
+        with self.connection:
+            return self.cursor.execute("INSERT INTO `Users` (`user_id`, `status_of_subscription`) VALUES (?,?)", (user_id, False))
+
     def add_subscriber(self, user_id, status=True):
         with self.connection:
             return self.cursor.execute("INSERT INTO `Users` (`user_id`, `status_of_subscription`) VALUES (?,?)", (user_id, status))
@@ -28,8 +32,7 @@ class UserTable:
 
     def find_user(self, user_id):
         with self.connection:
-            return self.cursor.execute("SELECT * FROM `Users` WHERE `user_id` = ?", (user_id,)).fetchall()
-
+            return self.cursor.execute("SELECT * FROM `Users` WHERE `user_id` = ?", (user_id,)).fetchall()[0]
 
     def close(self):
         self.connection.close()

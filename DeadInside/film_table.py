@@ -22,5 +22,9 @@ class FilmTable:
     def update_link(self, name_rus, link):
         return self.cursor.execute("UPDATE `Films` SET `link` = ? WHERE `name_rus` = ?", link, name_rus)
 
+    def find_film(self, film_name):
+        with self.connection:
+            return self.cursor.execute("SELECT * FROM `Films` WHERE `film_name_rus` = ?", (film_name,)).fetchall()[0]
+
     def close(self):
         self.connection.close()
