@@ -1,38 +1,39 @@
 import telebot
-import random
 import config
+import user_table
 
 bot = telebot.TeleBot(config.API_TOKEN)
 
-ID = []
+bot.get_chat(config.CHAT_ID)
 
 
 @bot.message_handler(commands=["start"])
 def welcome_user(message):
+    user_data = user_table.UserTable('database.db')
     markup_inline = telebot.types.InlineKeyboardMarkup(row_width=1)
     #  todo replace link to user's channel
     subscribe = telebot.types.InlineKeyboardButton(text="Подписаться на канал",
                                                    url="youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO")
     markup_inline.add(subscribe)
-    cont_watching = telebot.types.InlineKeyboardButton(text="Продолжить просмотр", callback_data="followed")
+    cont_watching = telebot.types.InlineKeyboardButton(text="Продолжить просмотр", callback_data="check_followed")
     markup_inline.add(cont_watching)
     if message.from_user.first_name is None:
         bot.send_message(message.chat.id, "Добро пожаловать, {0.last_name}!".
                          format(message.from_user), reply_markup=markup_inline)
-    elif message.from_user.last_name is None:    
+    elif message.from_user.last_name is None:
         bot.send_message(message.chat.id, "Добро пожаловать, {0.first_name}!".
                          format(message.from_user), reply_markup=markup_inline)
     else:
         bot.send_message(message.chat.id, "Добро пожаловать, {0.first_name} {0.last_name}!".
                          format(message.from_user, message.from_user), reply_markup=markup_inline)
-    print(message.from_user.id)
+
+    user_data.add_person(message.from_user.id)
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def work(call):
-    if call.data == "followed":
-        #  todo check if subscribe
-        if random.randint(1, 2) == 1:
+    if call.data == "check_followed":
+        if bot.get_chat_member(config.CHAT_ID, call.message.chat.id).status in config.STATUS:
             bot.delete_message(call.message.chat.id, call.message.id)
             markup_reply = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
             search_button = telebot.types.KeyboardButton("Поиск")
@@ -71,6 +72,7 @@ def reply_to_request(message):
 def upload_video(message):
     #  todo check if person is admin or not
     ID.append(message.video.file_id)
+    print(message.text)
     print(ID[-1])
 
 
