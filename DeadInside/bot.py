@@ -1,19 +1,17 @@
 import telebot
 import config
 import user_table
-
+import film_table
 bot = telebot.TeleBot(config.API_TOKEN)
-
-bot.get_chat(config.CHAT_ID)
 
 
 @bot.message_handler(commands=["start"])
 def welcome_user(message):
     user_data = user_table.UserTable('database.db')
     markup_inline = telebot.types.InlineKeyboardMarkup(row_width=1)
-    #  todo replace link to user's channel
+    #  replace with employer chat id
     subscribe = telebot.types.InlineKeyboardButton(text="Подписаться на канал",
-                                                   url="youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO")
+                                                   url="t.me/joinchat/zEmgN-Vc3sMwN2Iy")
     markup_inline.add(subscribe)
     cont_watching = telebot.types.InlineKeyboardButton(text="Продолжить просмотр", callback_data="check_followed")
     markup_inline.add(cont_watching)
@@ -28,12 +26,13 @@ def welcome_user(message):
                          format(message.from_user, message.from_user), reply_markup=markup_inline)
 
     user_data.add_person(message.from_user.id)
+    user_data.close()
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def work(call):
     if call.data == "check_followed":
-        if bot.get_chat_member(config.CHAT_ID, call.message.chat.id).status in config.STATUS:
+        if bot.get_chat_member(config.CHAT_ID, call.message.chat.id).status in config.STATUS_FOLLOWED:
             bot.delete_message(call.message.chat.id, call.message.id)
             markup_reply = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
             search_button = telebot.types.KeyboardButton("Поиск")
@@ -57,23 +56,23 @@ def reply_to_request(message):
     elif message.text == "Список сериалов":
         bot.send_message(message.chat.id, text="🔎Ниже представлен список сериалов отсортированных по названию ("
                                                "алфавиту).\n\nКакой хотите посмотреть сериал?")
-    elif message.text == "чебурашка":
-        video = open("D:/ITMO/cheburashka.mp4", "rb")
-        bot.send_video(message.chat.id, video, timeout=1000, supports_streaming=True)
-
-    elif message.text == "cum":
-        bot.send_video(message.chat.id, ID[-1], timeout=1000, supports_streaming=True)
-
     else:
-        bot.send_message(message.chat.id, text="Я не смог найти такой сериал. Пожалуйста, повторите попытку!")
+        film_data = film_table.FilmTable('film_database.db')
+        film_id = film_data.find_film(message.text)[3]
+        bot.send_video(message.chat.id, film_id, timeout=1000, supports_streaming=True)
 
 
 @bot.message_handler(content_types=["video"])
 def upload_video(message):
-    #  todo check if person is admin or not
-    ID.append(message.video.file_id)
-    print(message.text)
-    print(ID[-1])
+    #  todo add description, name etc.
+    user_data = user_table.UserTable('database.db')
+    print(user_data.get_admin(message.from_user.id))
+    if user_data.get_admin(message.from_user.id):
+        film_data = film_table.FilmTable('film_database.db')
+        film_data.add_film("Пустой", message.video.file_id)
+        film_data.close()
+    else:
+        bot.send_message(message.chat.id, text="У вас не прав на добавление материалов в данного бота.")
 
 
 if __name__ == "__main__":

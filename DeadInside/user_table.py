@@ -27,9 +27,10 @@ class UserTable:
     def update_subscription(self, user_id, status):
         return self.cursor.execute("UPDATE `Users` SET `status_of_subscription` = ? WHERE `user_id` = ?", (status, user_id))
 
-    def get_admin(self, status=True):
+    def get_admin(self, user_id):
         with self.connection:
-            return self.cursor.execute("SELECT * FROM `Users` WHERE `admin` = ?", (status,)).fetchall()
+            result = self.find_user(user_id)
+            return result[3]
 
     def find_user(self, user_id):
         with self.connection:
