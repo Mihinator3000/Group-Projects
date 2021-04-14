@@ -8,7 +8,7 @@ class FilmTable:
 
     def get_film(self):
         with self.connection:
-            return self.cursor.execute("SELECT * FROM `Users` WHERE `id` >= 0").fetchall()
+            return self.cursor.execute("SELECT * FROM `Films` WHERE `id` >= 0").fetchall()
 
     def film_exists(self, name_rus):
         with self.connection:
