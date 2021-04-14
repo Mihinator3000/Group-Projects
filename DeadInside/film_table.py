@@ -26,5 +26,9 @@ class FilmTable:
         with self.connection:
             return self.cursor.execute("SELECT * FROM `Films` WHERE `film_name_rus` = ?", (film_name,)).fetchall()[0]
 
+    def change_name_rus(self, id, new_name):
+        with self.connection:
+            return self.cursor.execute("UPDATE `Films` SET `film_name_rus` WHERE `id` = ?", new_name, id)
+
     def close(self):
         self.connection.close()
