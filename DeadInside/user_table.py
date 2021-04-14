@@ -26,5 +26,10 @@ class UserTable:
         with self.connection:
             return self.cursor.execute("SELECT * FROM `Users` WHERE `admin` = ?", (status,)).fetchall()
 
+    def find_user(self, user_id):
+        with self.connection:
+            return self.cursor.execute("SELECT * FROM `Users` WHERE `user_id` = ?", (user_id,)).fetchall()
+
+
     def close(self):
         self.connection.close()
