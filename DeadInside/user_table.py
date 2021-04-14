@@ -24,7 +24,7 @@ class UserTable:
 
     def get_admin(self, status=True):
         with self.connection:
-            return self.cursor.execute("SELECT * FROM `Users` WHERE `user_id` = ?", (status,)).fetchall()
+            return self.cursor.execute("SELECT * FROM `Users` WHERE `admin` = ?", (status,)).fetchall()
 
     def close(self):
         self.connection.close()
