@@ -2,14 +2,17 @@ import telebot
 import config
 import user_table
 import film_table
+
+
 bot = telebot.TeleBot(config.API_TOKEN)
+#  todo admin panel
 
 
 @bot.message_handler(commands=["start"])
 def welcome_user(message):
     user_data = user_table.UserTable('database.db')
     markup_inline = telebot.types.InlineKeyboardMarkup(row_width=1)
-    #  replace with employer chat id
+    #  todo replace with employer chat id
     subscribe = telebot.types.InlineKeyboardButton(text="Подписаться на канал",
                                                    url="t.me/joinchat/zEmgN-Vc3sMwN2Iy")
     markup_inline.add(subscribe)
@@ -49,7 +52,6 @@ def work(call):
 
 @bot.message_handler(content_types=["text"])
 def reply_to_request(message):
-    #  todo normal search
     if message.text == "Поиск":
         bot.send_message(message.chat.id, text="🔎 Просто отправьте боту название сериала.")
     #  todo fkn list of series by deleting message
@@ -58,21 +60,37 @@ def reply_to_request(message):
                                                "алфавиту).\n\nКакой хотите посмотреть сериал?")
     else:
         film_data = film_table.FilmTable('film_database.db')
-        film_id = film_data.find_film(message.text)[3]
-        bot.send_video(message.chat.id, film_id, timeout=1000, supports_streaming=True)
+        try:
+            film_id = film_data.find_film(message.text)[3]
+            bot.send_video(message.chat.id, film_id, timeout=1000, supports_streaming=True)
+        except IndexError:
+            bot.send_message(message.chat.id, text="Нет такого фильма!")
 
 
 @bot.message_handler(content_types=["video"])
 def upload_video(message):
     #  todo add description, name etc.
     user_data = user_table.UserTable('database.db')
-    print(user_data.get_admin(message.from_user.id))
     if user_data.get_admin(message.from_user.id):
         film_data = film_table.FilmTable('film_database.db')
         film_data.add_film("Пустой", message.video.file_id)
+        #  todo print id of added film
+        answ = bot.send_message(message.chat.id, text="Добавьте имя фильма:")
+        bot.register_next_step_handler(answ, name_of_video)
         film_data.close()
     else:
         bot.send_message(message.chat.id, text="У вас не прав на добавление материалов в данного бота.")
+
+
+def name_of_video(message):
+    #  todo check if input message is wrong and alert user
+    #  todo other options year, genre etc.
+    num, name = message.text.split(maxsplit=1)
+    film_data = film_table.FilmTable('film_database.db')
+    film_data.change_name_rus(num, name)
+    bot.send_message(message.chat.id, text="Название успешно изменено!")
+    film_data.close()
+    return
 
 
 if __name__ == "__main__":

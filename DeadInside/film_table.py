@@ -20,7 +20,8 @@ class FilmTable:
             return self.cursor.execute("INSERT INTO `Films` (`film_name_rus`, `link`) VALUES (?,?)", (name_rus, link))
 
     def update_link(self, name_rus, link):
-        return self.cursor.execute("UPDATE `Films` SET `link` = ? WHERE `name_rus` = ?", link, name_rus)
+        with self.connection:
+            return self.cursor.execute("UPDATE `Films` SET `link` = ? WHERE `name_rus` = ?", (link, name_rus))
 
     def find_film(self, film_name):
         with self.connection:
@@ -28,7 +29,7 @@ class FilmTable:
 
     def change_name_rus(self, id, new_name):
         with self.connection:
-            return self.cursor.execute("UPDATE `Films` SET `film_name_rus` WHERE `id` = ?", new_name, id)
+            return self.cursor.execute("UPDATE `Films` SET `film_name_rus` = ? WHERE `id` = ?", (new_name, id))
 
     def close(self):
         self.connection.close()
