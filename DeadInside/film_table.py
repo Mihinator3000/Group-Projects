@@ -31,5 +31,9 @@ class FilmTable:
         with self.connection:
             return self.cursor.execute("UPDATE `Films` SET `film_name_rus` = ? WHERE `id` = ?", (new_name, id))
 
+    def all_films_by_name_rus(self):
+        with self.connection:
+            return self.cursor.execute("SELECT * FROM `Films` ORDER BY `film_name_rus`").fetchall()
+
     def close(self):
         self.connection.close()
