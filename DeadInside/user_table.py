@@ -36,5 +36,10 @@ class UserTable:
         with self.connection:
             return self.cursor.execute("SELECT * FROM `Users` WHERE `user_id` = ?", (user_id,)).fetchall()[0]
 
+    def user_count(self):
+        with self.connection:
+            result = self.cursor.execute("SELECT * FROM `Users` WHERE `status_of_subscription` = ?", (1,)).fetchall()
+            return len(result)
+
     def close(self):
         self.connection.close()
