@@ -12,3 +12,4 @@ film_data = film_table.FilmTable('film_database.db')
 film = film_data.all_films_by_name_rus()
 for i in film:
     print(i[1])
+film_data.add_film_by_name("rur")

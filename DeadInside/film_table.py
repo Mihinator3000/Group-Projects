@@ -18,10 +18,18 @@ class FilmTable:
     def add_film(self, name_rus, link):
         with self.connection:
             return self.cursor.execute("INSERT INTO `Films` (`film_name_rus`, `link`) VALUES (?,?)", (name_rus, link))
+        
+    def add_film_by_name(self, name_rus):
+        with self.connection:
+            return self.cursor.execute("INSERT INTO `Films` (`film_name_rus`) VALUES (?)", (name_rus,))
 
     def update_link(self, name_rus, link):
         with self.connection:
             return self.cursor.execute("UPDATE `Films` SET `link` = ? WHERE `name_rus` = ?", (link, name_rus))
+
+    def update_link_id(self, id, link):
+        with self.connection:
+            return self.cursor.execute("UPDATE `Films` SET `link` = ? WHERE `id` = ?", (link, id))
 
     def find_film(self, film_name):
         with self.connection:
