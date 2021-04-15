@@ -48,7 +48,7 @@ class FilmTable:
         with self.connection:
             return self.cursor.execute("SELECT * FROM `Films` ORDER BY `film_name_rus`").fetchall()
 
-    def get_film_id(self, name, distance=80):
+    def get_film_id(self, name, distance=70):
         with self.connection:
             result = None
             for film in self.cursor.execute("SELECT * FROM `Films`"):
