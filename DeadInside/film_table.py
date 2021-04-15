@@ -1,5 +1,5 @@
 import sqlite3
-
+from fuzzywuzzy import fuzz
 
 class FilmTable:
     def __init__(self, database_file):
@@ -42,6 +42,23 @@ class FilmTable:
     def all_films_by_name_rus(self):
         with self.connection:
             return self.cursor.execute("SELECT * FROM `Films` ORDER BY `film_name_rus`").fetchall()
+
+    def film_get_lev(self, name, distance=70, add_dist=20):
+        with self.connection:
+            result = []
+            res_add = []
+            for film in self.cursor.execute("SELECT * FROM `Films`"):
+                lev = fuzz.token_sort_ratio(film[1], name)
+                if lev > distance:
+                    result.append(film)
+                elif lev > add_dist:
+                    res_add.append(film)
+            if not bool(len(result)):
+                return res_add
+            return result
+
+
+
 
     def close(self):
         self.connection.close()
