@@ -4,7 +4,7 @@ import user_table
 import film_table
 
 
-bot = telebot.TeleBot(config.API_TOKEN)
+bot = telebot.AsyncTeleBot(config.API_TOKEN)
 #  todo admin panel
 
 
@@ -35,12 +35,16 @@ def welcome_user(message):
 @bot.callback_query_handler(func=lambda call: True)
 def work(call):
     if call.data == "check_followed":
-        if bot.get_chat_member(config.CHAT_ID, call.message.chat.id).status in config.STATUS_FOLLOWED:
+        if bot.get_chat_member(config.CHAT_ID, call.message.chat.id).wait().status in config.STATUS_FOLLOWED:
             bot.delete_message(call.message.chat.id, call.message.id)
             markup_reply = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
             search_button = telebot.types.KeyboardButton("Поиск")
             list_button = telebot.types.KeyboardButton("Список сериалов")
+            user_data = user_table.UserTable('database.db')
             markup_reply.add(search_button, list_button)
+            if user_data.get_admin(call.message.chat.id):
+                adm_panel = telebot.types.KeyboardButton("Включить панель администратора")
+                markup_reply.add(adm_panel)
             bot.send_message(call.message.chat.id, text="Вы успешно подписались на канал, приятного просмотра!\n"
                                                         "Напишите название сериала, который вы ищете, "
                                                         "или воспользуйтесь кнопками ниже!",
@@ -80,6 +84,7 @@ def upload_video(message):
         film_data.close()
     else:
         bot.send_message(message.chat.id, text="У вас не прав на добавление материалов в данного бота.")
+    user_data.close()
 
 
 def name_of_video(message):
