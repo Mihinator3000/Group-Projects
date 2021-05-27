@@ -10,14 +10,8 @@ def start():
     gas_velocity = float(ent4.get())
     burn_velocity = float(ent5.get())
     earth_weight = float(ent6.get())*10**24
-    # print(alpha)
-    # print(rocket_weight)
-    # print(fuel_weight)
-    # print(gas_velocity)
-    # print(burn_velocity)
-    # print(earth_weight)
     window.quit()
-    graph(alpha, rocket_weight, fuel_weight, gas_velocity, burn_velocity, earth_weight)
+    graph(abs(alpha), rocket_weight, fuel_weight, gas_velocity, burn_velocity, earth_weight)
 
 
 window = Tk()

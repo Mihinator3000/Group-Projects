@@ -1,14 +1,13 @@
 from math import *
 import matplotlib.pyplot as plt
 
+# output data
 x = []
 y = []
-
 speed = []
+speed_x = []
+speed_y = []
 fuel_left = []
-
-earth_x = [i for i in range(10 ** 6)]
-earth_y = [0 for i in range(10 ** 6)]
 
 #  CONST
 earth_radius = 6.37 * 10 ** 6
@@ -45,16 +44,17 @@ def calculate_y(cur_acceleration_y, cur_time):
 
 def graph(alpha, rocket_weight, fuel_weight, gas_velocity, burn_velocity, earth_weight):
     time = 0
-    ax = 0
-    ay = 0
-
     up_flight_time = int(fuel_weight / burn_velocity)
+    time_arr = [i for i in range(up_flight_time)]
+    time_arr.insert(0, 0)
     rocket_up = False
     for second in range(up_flight_time):
         if second == 0:
             x.append(0)
             y.append(0)
             speed.append(0)
+            speed_x.append(0)
+            speed_y.append(0)
             fuel_left.append(fuel_weight)
         else:
             cur_rocket_weight = rocket_weight + fuel_left[second - 1]
@@ -72,6 +72,8 @@ def graph(alpha, rocket_weight, fuel_weight, gas_velocity, burn_velocity, earth_
                 x.append(0)
                 y.append(0)
             speed.append(calculate_speed(ax, ay, second))
+            speed_x.append(speed[-1] * cos(alpha))
+            speed_y.append(speed[-1] * sin(alpha))
             fuel_left.append(calculate_left_fuel(second, fuel_weight, burn_velocity))
     if not rocket_up:
         print("Ракета не взлетела :(")
@@ -86,20 +88,37 @@ def graph(alpha, rocket_weight, fuel_weight, gas_velocity, burn_velocity, earth_
             if calculate_g(y[-1], earth_weight) <= 10**-3:
                 print("Ракета осталась в космосе по завершении своего полёта!")
                 break
-            time += 1
+            time = time_arr[-1] + 1
+            time_arr.append(time)
             new_y = last_y + last_speed * sin(alpha) * time - (calculate_g(y[-1], earth_weight) * time**2)/2
             new_x = last_x + last_speed * cos(alpha) * time
             new_speed = sqrt((last_speed * sin(alpha) - calculate_g(y[-1], earth_weight) * time)**2 + (last_speed * cos(alpha))**2)
-            y.append(new_y)
             x.append(new_x)
+            y.append(new_y)
             speed.append(new_speed)
+            speed_x.append(new_speed * cos(alpha))
+            speed_y.append(new_speed * sin(alpha))
             fuel_left.append(0)
-            # print(new_x, new_y, new_speed, calculate_g(y[-1], earth_weight))
-
-    earth_x = [i for i in range(int(max(x)) + 10 ** 3)]
-    earth_y = [0 for _ in range(int(max(x)) + 10 ** 3)]
+    earth_x = [i for i in range(3 * 10**6)]
+    earth_y = [0 for _ in range(3 * 10**6)]
+    del time_arr[-1]
+    print("Ракета летела", up_flight_time + time, "секунд.")
+    plt.figure(figsize=(16, 10))
+    plt.subplot(3, 3, 1)
+    plt.title("Полёт ракеты:")
     plt.plot(earth_x, earth_y)
     plt.plot(x, y)
-    print("Ракета летела", up_flight_time + time, "секунд.")
+    plt.subplot(3, 3, 2)
+    plt.title("Скорость ракеты по модулю:")
+    plt.plot(time_arr, speed)
+    plt.subplot(3, 3, 3)
+    plt.title("Скорость ракеты по x:")
+    plt.plot(time_arr, speed_x)
+    plt.subplot(3, 3, 4)
+    plt.title("Скорость ракеты по y:")
+    plt.plot(time_arr, speed_y)
+    plt.subplot(3, 3, 5)
+    plt.title("Оставшееся топливо:")
+    plt.plot(time_arr, fuel_left)
     plt.show()
 
