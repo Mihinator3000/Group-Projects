@@ -26,7 +26,7 @@ def dijkstra(s, numOfNodes, d, used, availableWays, lengthOfWays):
                 d[availableWays[v][j]] = d[v] + lengthOfWays[v][j]
 
 
-def fold_bellman(s, d, Edges):
+def ford_bellman(s, d, Edges):
     d[s] = 0
     while True:
         any = False

@@ -2,6 +2,12 @@ import time
 import random
 from random import randint
 import matplotlib.pyplot as plt
+import algorythms
+from sys import *
+import threading
+
+setrecursionlimit(10 ** 9)
+threading.stack_size(2 ** 27)
 
 q = 1
 n = 10000
@@ -14,39 +20,39 @@ T_b = []
 M_b = []
 
 
-class Edge:
-    def __init__(self, startNode_, endNode_, length_):
-        self.startNode = startNode_
-        self.endNode = endNode_
-        self.length = length_
-
-
-def algorithms(m):
+def execution(m):
     arr = []
     for _ in range(m):
-        e = Edge(randint(0, n - 1), randint(0, n - 1), randint(q, r))
+        e = algorythms.Edge(randint(0, n - 1), randint(0, n - 1), randint(q, r))
         arr.append(e)
-        # do your fuckery
+    d = [algorythms.INF for _ in range(n)]
+    algorythms.ford_bellman(0, d, arr)
+    print(m)
 
 
-start_time = time.time()
-for i in range(100000, 10000000, 100000):
-    M_a.append(i)
-    algorithms(i)
-    T_a.append(time.time() - start_time)
+def work():
+    for i in range(100000, 1000000, 100000):
+        start_time = time.time()
+        M_a.append(i)
+        execution(i)
+        T_a.append(time.time() - start_time)
 
-start_time = time.time()
-for i in range(1000, 100000, 1000):
-    M_b.append(i)
-    algorithms(i)
-    T_b.append(time.time() - start_time)
+    for i in range(1000, 100000, 1000):
+        start_time = time.time()
+        M_b.append(i)
+        execution(i)
+        T_b.append(time.time() - start_time)
 
-plt.figure(figsize=(8, 4))
-plt.subplot(1, 2, 1)
-plt.title("Ta(m):")
-plt.plot(T_a, M_a)
-plt.subplot(1, 2, 2)
-plt.title("Tb(m):")
-plt.plot(T_b, M_b)
-plt.show()
+    plt.figure(figsize=(8, 4))
+    plt.subplot(1, 2, 1)
+    plt.title("Ta(m):")
+    plt.plot(T_a, M_a)
+    plt.subplot(1, 2, 2)
+    plt.title("Tb(m):")
+    plt.plot(T_b, M_b)
+    plt.show()
+
+
+thread = threading.Thread(target=work)
+thread.start()
 
