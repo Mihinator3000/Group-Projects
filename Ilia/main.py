@@ -1,58 +1,64 @@
 import time
-import random
 from random import randint
 import matplotlib.pyplot as plt
 import algorythms
-from sys import *
 import threading
 
-setrecursionlimit(10 ** 9)
 threading.stack_size(2 ** 27)
 
 q = 1
 n = 10000
 r = 1000000
 
-T_a = []
-M_a = []
+T_fb = []
+M_fb = []
 
-T_b = []
-M_b = []
-
-
-def execution(m):
-    arr = []
-    for _ in range(m):
-        e = algorythms.Edge(randint(0, n - 1), randint(0, n - 1), randint(q, r))
-        arr.append(e)
-    d = [algorythms.INF for _ in range(n)]
-    algorythms.ford_bellman(1, d, arr)
-    print(m)
+T_d = []
+M_d = []
 
 
-def work():
-    for i in range(100000, 1000000, 100000):
+def task(m_min, m_step, m_max):
+    for m in range(m_min, m_max, m_step):
+        arr_edges = []
+        for _ in range(m):
+            e = algorythms.Edge(randint(0, n - 1), randint(0, n - 1), randint(q, r))
+            arr_edges.append(e)
         start_time = time.time()
-        M_a.append(i)
-        execution(i)
-        T_a.append(time.time() - start_time)
+        M_fb.append(m)
+        # bellman
+        T_fb.append(time.time() - start_time)
 
-    for i in range(1000, 100000, 1000):
+        arr_pairs = [[] for _ in range(n)]
+        for i in arr_edges:
+            arr_pairs[i.startNode].\
+                append([i.length, i.endNode])
         start_time = time.time()
-        M_b.append(i)
-        execution(i)
-        T_b.append(time.time() - start_time)
-
-    plt.figure(figsize=(8, 4))
-    plt.subplot(1, 2, 1)
-    plt.title("Ta(m):")
-    plt.plot(T_a, M_a)
-    plt.subplot(1, 2, 2)
-    plt.title("Tb(m):")
-    plt.plot(T_b, M_b)
-    plt.show()
+        M_d.append(m)
+        # dejkstra
+        T_d.append(time.time() - start_time)
+        print(m)
 
 
-thread = threading.Thread(target=work)
-thread.start()
+plt.figure(figsize=(8, 8))
+thread_a = threading.Thread(target=task(100000, 100000, 10000000))
+thread_a.start()
+plt.subplot(2, 2, 1)
+plt.title("a) T(m) FB:")
+plt.plot(T_fb, M_fb)
+plt.subplot(2, 2, 2)
+plt.title("a) T(m) D:")
+plt.plot(T_d, M_d)
+T_fb = []
+M_fb = []
+T_d = []
+M_d = []
+thread_b = threading.Thread(target=task(1000, 1000, 100000))
+thread_b.start()
+plt.subplot(2, 2, 3)
+plt.title("b) T(m) FB:")
+plt.plot(T_fb, M_fb)
+plt.subplot(2, 2, 4)
+plt.title("b) T(m) D:")
+plt.plot(T_d, M_d)
+plt.show()
 
