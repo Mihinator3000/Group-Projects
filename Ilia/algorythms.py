@@ -1,5 +1,4 @@
-import Dheap
-
+from heapq_max import *
 
 INF = 100000000001
 
@@ -11,23 +10,26 @@ class Edge:
         self.length = length_
 
 
-def dijkstra(s, numOfNodes, d, used, availableWays, lengthOfWays):
+def dijkstra(s, numOfNodes, graph):
+    d = [INF for _ in range(numOfNodes)]
+    queue = []
     d[s - 1] = 0
-    for i in range(numOfNodes):
-        v = -1
-        for j in range(numOfNodes):
-            if not used[j] and (v == - 1 or d[j] < d[v]):
-                v = j
-        if d[v] == INF:
-            break
-        used[v] = True
-        for j in range(availableWays[v].length()):
-            if d[availableWays[v][j]] > d[v] + lengthOfWays[v][j]:
-                d[availableWays[v][j]] = d[v] + lengthOfWays[v][j]
+    heappush_max(queue, [0, s])
+    while queue:
+        cur_d, v = heappop_max(queue)
+        if cur_d > d[v - 1]:
+            continue
+        for j in range(len(graph[v - 1])):
+            length, to = graph[v - 1][j]
+            if d[v - 1] + length < d[to - 1]:
+                d[to - 1] = d[v - 1] + length
+                heappush_max(queue, [d[to - 1], to])
+    return d
 
 
-def ford_bellman(s, d, Edges):
-    d[s] = 0
+def ford_bellman(s, numOfNodes, Edges):
+    d = [INF for _ in range(numOfNodes)]
+    d[s - 1] = 0
     while True:
         any = False
         for edge in Edges:
@@ -37,3 +39,4 @@ def ford_bellman(s, d, Edges):
                     any = True
         if not any:
             break
+    return d

@@ -26,7 +26,7 @@ def execution(m):
         e = algorythms.Edge(randint(0, n - 1), randint(0, n - 1), randint(q, r))
         arr.append(e)
     d = [algorythms.INF for _ in range(n)]
-    algorythms.ford_bellman(0, d, arr)
+    algorythms.ford_bellman(1, d, arr)
     print(m)
 
 
