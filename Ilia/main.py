@@ -21,22 +21,25 @@ def task(m_min, m_step, m_max):
     for m in range(m_min, m_max, m_step):
         arr_edges = []
         for _ in range(m):
-            e = algorythms.Edge(randint(0, n - 1), randint(0, n - 1), randint(q, r))
+            e = algorythms.Edge(randint(1, n), randint(1, n), randint(q, r))
             arr_edges.append(e)
         start_time = time.time()
         M_fb.append(m)
         # bellman
+        print(algorythms.ford_bellman(1, n, arr_edges))
         T_fb.append(time.time() - start_time)
 
         arr_pairs = [[] for _ in range(n)]
         for i in arr_edges:
-            arr_pairs[i.startNode].\
-                append([i.length, i.endNode])
+            arr_pairs[i.startNode - 1].append([i.length, i.endNode])
         start_time = time.time()
         M_d.append(m)
-        # dejkstra
+        #  dijkstra
+        print(algorythms.dijkstra(1, n, arr_pairs))
         T_d.append(time.time() - start_time)
-        print(m)
+        # for e in arr_edges:
+        #     print(e, end=" ")
+        # print(arr_pairs)
 
 
 plt.figure(figsize=(8, 8))
@@ -52,7 +55,7 @@ T_fb = []
 M_fb = []
 T_d = []
 M_d = []
-thread_b = threading.Thread(target=task(1000, 1000, 100000))
+thread_b = threading.Thread(target=task(1000, 1000, 10000))
 thread_b.start()
 plt.subplot(2, 2, 3)
 plt.title("b) T(m) FB:")

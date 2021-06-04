@@ -1,6 +1,6 @@
 from heapq_max import *
 
-INF = 100000000001
+INF = 10**14
 
 
 class Edge:
@@ -8,6 +8,9 @@ class Edge:
         self.startNode = startNode_
         self.endNode = endNode_
         self.length = length_
+
+    def __str__(self):
+        return str([self.startNode, self.endNode, self.length])
 
 
 def dijkstra(s, numOfNodes, graph):
@@ -33,10 +36,17 @@ def ford_bellman(s, numOfNodes, Edges):
     while True:
         any = False
         for edge in Edges:
-            if d[edge.startNode] < INF:
-                if d[edge.endNode] > d[edge.startNode] + edge.length:
-                    d[edge.endNode] = d[edge.startNode] + edge.length
+            if d[edge.startNode - 1] < INF:
+                if d[edge.endNode - 1] > d[edge.startNode - 1] + edge.length:
+                    d[edge.endNode - 1] = d[edge.startNode - 1] + edge.length
                     any = True
         if not any:
             break
     return d
+
+
+# e1 = Edge(1, 2, 5)
+# e2 = Edge(1, 3, 7)
+# e3 = Edge(2, 3, 1)
+# Edges = [e1, e2, e3]
+# print(ford_bellman(1, 3, Edges))
