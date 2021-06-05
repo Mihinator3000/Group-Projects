@@ -1,6 +1,5 @@
-from math import pi
 from tkinter import *
-# from formulas import *
+import formulas
 from sys import *
 
 
@@ -12,7 +11,7 @@ def start():
     E = float(ent5.get())
     v0 = float(ent6.get()) * 10 ** 3
     window.quit()
-    # graph(U, R, r, l, E, v0)
+    formulas.graph(U, R, r, l, E, v0)
 
 
 window = Tk()
