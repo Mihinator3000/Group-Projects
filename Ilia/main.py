@@ -27,7 +27,7 @@ def task(m_min, m_step, m_max):
         start_time = time.time()
         M_fb.append(m)
         # execute ford_bellman
-        print(algorythms.ford_bellman(1, n, arr_edges))
+        algorythms.ford_bellman(1, n, arr_edges)
         T_fb.append(time.time() - start_time)
 
         arr_pairs = [[] for _ in range(n)]
@@ -36,16 +36,13 @@ def task(m_min, m_step, m_max):
         start_time = time.time()
         M_d.append(m)
         #  execute dijkstra
-        print(algorythms.dijkstra(1, n, arr_pairs))
+        algorythms.dijkstra(1, n, arr_pairs)
         T_d.append(time.time() - start_time)
-        # for e in arr_edges:
-        #     print(e, end=" ")
-        # print(arr_pairs)
         print(m)
 
 
 plt.figure(figsize=(8, 8))
-thread_a = threading.Thread(target=task(100000, 100000, 10000000))
+thread_a = threading.Thread(target=task(100000, 100000, 10000001))
 thread_a.start()
 plt.subplot(2, 2, 1)
 plt.title("a) T(m) FB:")
@@ -57,7 +54,7 @@ T_fb = []
 M_fb = []
 T_d = []
 M_d = []
-thread_b = threading.Thread(target=task(1000, 1000, 10000))
+thread_b = threading.Thread(target=task(1000, 1000, 100001))
 thread_b.start()
 plt.subplot(2, 2, 3)
 plt.title("b) T(m) FB:")
