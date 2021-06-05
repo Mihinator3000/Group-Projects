@@ -1,5 +1,7 @@
 import copy
 
+INF = 10**14
+
 
 class Dheap(object):
     def __init__(self, k, heap):
@@ -96,6 +98,6 @@ class MinHeap(Dheap):
     def delete_element_at_index(self, index):
         if index >= self.length():
             return
-        self.heap[index] = float("-inf")
+        self.heap[index] = INF
         self.swim_up(index)
         self.extract_root()

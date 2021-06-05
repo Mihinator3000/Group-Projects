@@ -1,8 +1,4 @@
-from heapq_max import *
-from d_heap import *
-
-
-INF = 10**14
+import Dheap
 
 
 class Edge:
@@ -16,7 +12,7 @@ class Edge:
 
 
 def dijkstra_old(s, numOfNodes, availableWays, lengthOfWays):
-    d = [INF for _ in range(numOfNodes)]
+    d = [Dheap.INF for _ in range(numOfNodes)]
     used = [False for _ in range(numOfNodes)]
     d[s - 1] = 0
     for i in range(numOfNodes):
@@ -24,7 +20,7 @@ def dijkstra_old(s, numOfNodes, availableWays, lengthOfWays):
         for j in range(numOfNodes):
             if not used[j] and (v == - 1 or d[j] < d[v]):
                 v = j
-        if d[v] == INF:
+        if d[v] == Dheap.INF:
             break
         used[v] = True
         for j in range(len(availableWays[v])):
@@ -33,30 +29,29 @@ def dijkstra_old(s, numOfNodes, availableWays, lengthOfWays):
 
 
 def dijkstra(s, numOfNodes, graph):
-    d = [INF for _ in range(numOfNodes)]
-    queue = []
+    d = [Dheap.INF for _ in range(numOfNodes)]
+    queue = Dheap.MinHeap(4, [])
     d[s - 1] = 0
-    heappush_max(queue, [0, s])
-    while queue:
-        tmp = heappop_max(queue)
-        cur_d, v = -tmp[0], tmp[1]
+    queue.add_element([[0, s]])
+    while queue.length() != 0:
+        cur_d, v = queue.extract_root()
         if cur_d > d[v - 1]:
             continue
         for j in range(len(graph[v - 1])):
             length, to = graph[v - 1][j]
             if d[v - 1] + length < d[to - 1]:
                 d[to - 1] = d[v - 1] + length
-                heappush_max(queue, [-d[to - 1], to])
+                queue.add_element([[d[to - 1], to]])
     return d
 
 
 def ford_bellman(s, numOfNodes, Edges):
-    d = [INF for _ in range(numOfNodes)]
+    d = [Dheap.INF for _ in range(numOfNodes)]
     d[s - 1] = 0
     while True:
         any = False
         for edge in Edges:
-            if d[edge.startNode - 1] < INF:
+            if d[edge.startNode - 1] < Dheap.INF:
                 if d[edge.endNode - 1] > d[edge.startNode - 1] + edge.length:
                     d[edge.endNode - 1] = d[edge.startNode - 1] + edge.length
                     any = True
@@ -79,5 +74,6 @@ def ford_bellman(s, numOfNodes, Edges):
 # print(dijkstra(1, 3, [[[5, 2], [7, 3]], [[1, 3]], []]))
 # array = [[5, 2], [7, 1]]
 # max_heap_4_children = MinHeap(4, array)
-# print(max_heap_4_children.extract_root())
+# max_heap_4_children.add_element([[0, 5]])
 # print(max_heap_4_children.elements())
+# print(max_heap_4_children.extract_root())

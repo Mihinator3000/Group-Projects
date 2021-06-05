@@ -18,6 +18,7 @@ M_d = []
 
 
 def task(m_min, m_step, m_max):
+    # creating data
     for m in range(m_min, m_max, m_step):
         arr_edges = []
         for _ in range(m):
@@ -25,21 +26,16 @@ def task(m_min, m_step, m_max):
             arr_edges.append(e)
         start_time = time.time()
         M_fb.append(m)
-        # bellman
+        # execute ford_bellman
         print(algorythms.ford_bellman(1, n, arr_edges))
         T_fb.append(time.time() - start_time)
 
         arr_pairs = [[] for _ in range(n)]
-        # arr_ways = [[] for _ in range(n)]
-        # arr_len = [[] for _ in range(n)]
         for i in arr_edges:
             arr_pairs[i.startNode - 1].append([i.length, i.endNode])
-            # arr_ways[i.startNode - 1].append(i.endNode - 1)
-            # arr_len[i.startNode - 1].append(i.length)
         start_time = time.time()
         M_d.append(m)
-        #  dijkstra
-        # algorythms.dijkstra_old(1, n, arr_ways, arr_len)
+        #  execute dijkstra
         print(algorythms.dijkstra(1, n, arr_pairs))
         T_d.append(time.time() - start_time)
         # for e in arr_edges:
@@ -49,7 +45,7 @@ def task(m_min, m_step, m_max):
 
 
 plt.figure(figsize=(8, 8))
-thread_a = threading.Thread(target=task(100000, 100000, 1000000))
+thread_a = threading.Thread(target=task(100000, 100000, 10000000))
 thread_a.start()
 plt.subplot(2, 2, 1)
 plt.title("a) T(m) FB:")
