@@ -38,11 +38,10 @@ def task(m_min, m_step, m_max):
         #  execute dijkstra
         algorythms.dijkstra(1, n, arr_pairs)
         T_d.append(time.time() - start_time)
-        print(m)
 
 
 plt.figure(figsize=(8, 8))
-thread_a = threading.Thread(target=task(100000, 100000, 10000001))
+thread_a = threading.Thread(target=task(100000, 100000, 1000001))
 thread_a.start()
 plt.subplot(2, 2, 1)
 plt.title("a) T(m) FB:")
