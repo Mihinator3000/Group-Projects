@@ -67,7 +67,7 @@ class Dheap(object):
         self.heap[index2] = temp
 
 
-class MaxHeap(Dheap):
+class MinHeap(Dheap):
     def __init__(self, k, heap=None):
         super(self.__class__, self).__init__(k=k, heap=heap)
         if heap is None:
@@ -77,18 +77,18 @@ class MaxHeap(Dheap):
         children = self.get_children(index)
         if not children:
             return
-        max_child_index = children.index(max(children))
-        max_child_index = (self.k * index) + (max_child_index + 1)
-        if self.heap[max_child_index] > self.heap[index]:
-            self._swap(index, max_child_index)
-            if max_child_index <= size // self.k:
-                self._heapify(max_child_index, size)
+        min_child_index = children.index(min(children))
+        min_child_index = (self.k * index) + (min_child_index + 1)
+        if self.heap[min_child_index] < self.heap[index]:
+            self._swap(index, min_child_index)
+            if min_child_index <= size // self.k:
+                self._heapify(min_child_index, size)
 
     def _swim_up(self, index):
         if index == 0:
             return
         parent = (index - 1) // self.k
-        if self.heap[parent] > self.heap[index]:
+        if self.heap[parent] < self.heap[index]:
             return
         self._swap(parent, index)
         self._swim_up(index=parent)
@@ -96,6 +96,6 @@ class MaxHeap(Dheap):
     def delete_element_at_index(self, index):
         if index >= self.length():
             return
-        self.heap[index] = float("inf")
+        self.heap[index] = float("-inf")
         self.swim_up(index)
         self.extract_root()
