@@ -23,8 +23,6 @@ def calculate_e_by_y(fPoint, sPoint):
 arr_x, arr_y, arr_e = [], [], []
 arr_red_x, arr_red_y = [], []
 arr_blue_x, arr_blue_y = [], []
-# for i in range(6):
-#     file_name = "{}.txt".format(i+1)
 file_name = "1.txt"
 with open(file_name, 'r') as fin:
     array_of_points = []
@@ -60,11 +58,11 @@ with open(file_name, 'r') as fin:
         if border_over_cur_x == 1e9:
             border_over_cur_x = point.x
             v_over_x = point.v
-        if border_over_cur_y == 1e9:
-            border_over_cur_y = point.y
-            v_below_x = point.v
         if border_below_cur_x == -1e9:
             border_below_cur_x = point.x
+            v_below_x = point.v
+        if border_over_cur_y == 1e9:
+            border_over_cur_y = point.y
             v_over_y = point.v
         if border_below_cur_y == -1e9:
             border_below_cur_y = point.y
@@ -81,6 +79,7 @@ with open(file_name, 'r') as fin:
         arr_x.append(point.x)
         arr_y.append(point.y)
         arr_e.append(cur_e)
+
     for i in range(len(arr_e)):
         if arr_e[i] >= 1300:
             arr_red_x.append(arr_x[i])
@@ -89,8 +88,8 @@ with open(file_name, 'r') as fin:
         arr_blue_y.append(arr_y[i])
 
     plt.figure(figsize=(18, 16))
-    plt.scatter(arr_blue_x, arr_blue_y)
-    plt.scatter(arr_red_x, arr_red_y)
+    plt.scatter(arr_blue_x, arr_blue_y, s=15, c="#1f77b4", marker="s")
+    plt.scatter(arr_red_x, arr_red_y, s=15, c="#d62728", marker="s")
     plt.xlim(-6, 6)
     plt.ylim(-3, 3)
     plt.show()
