@@ -1,6 +1,5 @@
 from tkinter import *
 import formulas
-from sys import *
 
 
 def start():
@@ -11,7 +10,7 @@ def start():
     E = float(ent5.get())
     v0 = float(ent6.get()) * 10 ** 3
     window.quit()
-    formulas.graph(U, R, r, l, E, v0)
+    formulas.graph(U, R, r, l, v0)
 
 
 window = Tk()
@@ -53,12 +52,12 @@ lbl_5 = Label(window, text="Ф/м")
 lbl_5.grid(column=2, row=4)
 lbl_6 = Label(window, text="км/с")
 lbl_6.grid(column=2, row=5)
-ent1.insert(1, "50")
-ent2.insert(1, "0.2")
-ent3.insert(1, "0.15")
-ent4.insert(1, "10")
-ent5.insert(1, "3")
-ent6.insert(1, "300000")
+ent1.insert(1, "0.01")
+ent2.insert(1, "0.015")
+ent3.insert(1, "0.0010")
+ent4.insert(1, "0.07")
+ent5.insert(1, "1")
+ent6.insert(1, "0.03")
 btn = Button(window, text="     Пуск     ", command=start)
 btn.grid(column=1, row=6)
 window.mainloop()
