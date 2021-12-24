@@ -35,7 +35,7 @@ def task1():
     print(f"Maximum φ1 for purple light is {max(phi1_purple)}")
     print(f"Minimum φ2 for purple light is {min(phi2_purple)}")
 
-    plt.figure(figsize=(16, 16))
+    plt.figure(figsize=(12, 8))
     plt.subplot(1, 2, 1)
     plt.title("φ1(y)")
     plt.plot(y_positive, phi1_red, color="red")
@@ -50,24 +50,34 @@ def task1():
 def task2():
     n_red = 1.331
     n_purple = 1.346
-    phi_red = []
-    phi_purple = []
-    der_phi_red = []
-    der_phi_purple = []
     arr_y = [i / 10000 for i in range(1, 10000)]
+    phi_red = [round(degrees(4 * asin(arr_y[0] / n_red) - 2 * asin(arr_y[0])), 2)]
+    phi_purple = [round(degrees(4 * asin(arr_y[0] / n_purple) - 2 * asin(arr_y[0])), 2)]
+    der_phi_red = [1 / (4 / (sqrt(n_red ** 2 - arr_y[0] ** 2)) - 2 / sqrt(1 - arr_y[0] ** 2))]
+    der_phi_purple = [1 / (4 / (sqrt(n_purple ** 2 - arr_y[0] ** 2)) - 2 / sqrt(1 - arr_y[0] ** 2))]
 
-    for y in arr_y:
-        phi_red.append(round(degrees(4 * asin(y / n_red) - 2 * asin(y)), 2))
-        phi_purple.append(round(degrees(4 * asin(y / n_purple) - 2 * asin(y)), 2))
-        der_phi_red.append(1 / (4 / (sqrt(n_red ** 2 - y ** 2)) - 2 / sqrt(1 - y ** 2)))
-        der_phi_purple.append(1 / (4 / (sqrt(n_purple ** 2 - y ** 2)) - 2 / sqrt(1 - y ** 2)))
+    for number, y in enumerate(arr_y):
+        if number == 0:
+            continue
 
-    plt.figure(figsize=(16, 16))
+        der_phi_red_val = 1 / (4 / (sqrt(n_red ** 2 - y ** 2)) - 2 / sqrt(1 - y ** 2))
+        der_phi_purple_val = 1 / (4 / (sqrt(n_purple ** 2 - y ** 2)) - 2 / sqrt(1 - y ** 2))
+
+        if der_phi_red_val >= der_phi_red[-1]:
+            phi_red.append(round(degrees(4 * asin(y / n_red) - 2 * asin(y)), 2))
+            der_phi_red.append(1 / (4 / (sqrt(n_red ** 2 - y ** 2)) - 2 / sqrt(1 - y ** 2)))
+
+        if der_phi_purple_val >= der_phi_purple[-1]:
+            phi_purple.append(round(degrees(4 * asin(y / n_purple) - 2 * asin(y)), 2))
+            der_phi_purple.append(1 / (4 / (sqrt(n_purple ** 2 - y ** 2)) - 2 / sqrt(1 - y ** 2)))
+
+    plt.figure(figsize=(8, 8))
     plt.title("I(φ)")
-    plt.plot(phi_red[0:8500], der_phi_red[0:8500], color="red")
-    plt.plot(phi_purple[0:8500], der_phi_purple[0:8500], color="purple")
+    plt.plot(phi_red, der_phi_red, color="red")
+    plt.plot(phi_purple, der_phi_purple, color="purple")
     plt.show()
 
 
 task1()
 task2()
+
