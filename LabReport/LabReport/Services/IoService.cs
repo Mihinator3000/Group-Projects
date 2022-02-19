@@ -15,17 +15,6 @@ public class IoService
         return path;
     }
 
-    public bool GetDoBackup()
-    {
-        Console.Write("Do backup (y/n): ");
-        return Console.ReadLine() switch
-        {
-            "y" or "Y" => true,
-            "n" or "N" => false,
-            _ => throw new LabReportException("incorrect backup info input")
-        };
-    }
-
     public void PrintError(string message) =>
         Console.WriteLine($"Error: {message}");
 }
