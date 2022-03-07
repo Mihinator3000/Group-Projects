@@ -1,6 +1,4 @@
 ﻿using LabReport.Services;
-using LabReport.Tools;
-using Microsoft.VisualBasic.FileIO;
 
 namespace LabReport;
 
@@ -29,12 +27,8 @@ public class ReportGenerator
             
             string labFolder = _ioService.GetPathFolder();
 
-            bool doBackup = _ioService.GetDoBackup();
-
             if (!Directory.Exists(BackupService.BackupFolderName))
                 CheckDifference(new DirectoryInfo(labFolder));
-
-            //if (doBackup) new BackupService(labFolder).Copy();
         }
         catch (Exception e)
         {
@@ -61,11 +55,6 @@ public class ReportGenerator
 
     private void AddedFile(FileInfo fileInfo) => 
         WriteFile($"+ {fileInfo.Name}", fileInfo);
-
-    private void ChangedFile(FileInfo fileInfo)
-    {
-
-    }
 
     private void WriteFile(string title, FileInfo fileInfo)
     {
