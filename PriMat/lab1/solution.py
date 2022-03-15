@@ -126,6 +126,7 @@ class Solution:
     def parablesMethod(self):
         leftBorder = self.__leftBorder
         rightBorder = self.__rightBorder
+        parabolaMin = 0
 
         intervalLengths = []
 
@@ -136,6 +137,7 @@ class Solution:
         funcOfMid = self.__func__(middle)
 
         while not intervalLengths or intervalLengths[-1] >= self.__precison:
+            prevMin = parabolaMin
             intervalLengths.append(rightBorder - leftBorder)
 
             numerator = ((middle - leftBorder) ** 2 * (funcOfMid - funcOfRightBorder)
@@ -145,8 +147,13 @@ class Solution:
                                - (middle - rightBorder) * (funcOfMid - funcOfLeftBorder))
 
             parabolaMin = middle - (numerator / denomenator)
-            funcOfParabolaMin = self.__func__(parabolaMin)
 
+            if prevMin:
+                delta = parabolaMin - prevMin
+                if fabs(delta) < self.__precison:
+                    return parabolaMin, intervalLengths, len(intervalLengths)
+
+            funcOfParabolaMin = self.__func__(parabolaMin)
             if fabs(parabolaMin - leftBorder) >= fabs(parabolaMin - rightBorder):
                 rightBorder, funcOfRightBorder = parabolaMin, funcOfParabolaMin
                 continue
@@ -160,6 +167,7 @@ class Solution:
     def brentMethod(self):
         leftBorder = self.__leftBorder
         rightBorder = self.__rightBorder
+        parabolaMin = 0
 
         minimum = secondMin = thirdMin = (leftBorder + rightBorder) / 2
         funcOfMin = funcOfSecondMin = funcOfThirdMin = self.__func__(minimum)
@@ -168,6 +176,7 @@ class Solution:
 
         while not intervalLengths or intervalLengths[-1] >= self.__precison:
             intervalLengths.append(rightBorder - leftBorder)
+            prevMin = parabolaMin
 
             if funcOfMin not in [funcOfSecondMin, funcOfThirdMin] and funcOfSecondMin != funcOfThirdMin:
                 numerator = ((secondMin - minimum) ** 2 * (funcOfSecondMin - funcOfThirdMin)
@@ -186,7 +195,7 @@ class Solution:
                     parabolaMin = minimum - self.__GOLDEN_RATIO * (minimum - leftBorder)
 
             if fabs(parabolaMin - minimum) < self.__precison:
-                parabolaMin = minimum + copysign(parabolaMin - minimum, self.__precison)
+                return parabolaMin, intervalLengths, len(intervalLengths)
 
             funcOfParabolaMin = self.__func__(parabolaMin)
             if funcOfParabolaMin <= funcOfMin:
@@ -225,4 +234,4 @@ class Solution:
 
     @staticmethod
     def __func__(x):
-        return exp(sin(x) * log(x))
+        return sin(0.5 * log(x) * x) + 1
