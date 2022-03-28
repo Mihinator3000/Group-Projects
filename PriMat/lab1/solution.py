@@ -1,5 +1,6 @@
-from math import exp, sin, log, sqrt, fabs, copysign
 from functools import lru_cache
+from math import sin, log, sqrt, fabs
+
 import matplotlib.pyplot as plt
 
 
@@ -8,7 +9,7 @@ def drawGraph(func):
         result = func(solution)
 
         print("Minimum found, value is: ", result[0])
-        plt.plot([i for i in range(result[2])], result[1], label=f"{func.__name__}")
+        plt.plot([i for i in range(result[2])], result[1], label=func.__name__)
 
         return result
 
@@ -19,17 +20,17 @@ class Solution:
     def __init__(self, leftBorder: float, rightBorder: float, precision: float):
         self.__leftBorder = leftBorder
         self.__rightBorder = rightBorder
-        self.__precison = precision
+        self.__precision = precision
         self.__GOLDEN_RATIO = (3 - sqrt(5)) / 2
 
     @drawGraph
     def bisectionMethod(self):
-        indent = self.__precison / 2.01
+        indent = self.__precision / 2.01
         leftBorder = self.__leftBorder
         rightBorder = self.__rightBorder
         intervalLengths = []
 
-        while not intervalLengths or intervalLengths[-1] >= self.__precison:
+        while not intervalLengths or intervalLengths[-1] >= self.__precision:
             intervalLengths.append(rightBorder - leftBorder)
             middle = (leftBorder + rightBorder) / 2
 
@@ -45,7 +46,7 @@ class Solution:
         return (leftBorder + rightBorder) / 2, intervalLengths, len(intervalLengths)
 
     @drawGraph
-    def goldenRatioMethond(self):
+    def goldenRatioMethod(self):
         leftBorder = self.__leftBorder
         rightBorder = self.__rightBorder
 
@@ -57,19 +58,19 @@ class Solution:
         funcOfLeftPoint = self.__func__(leftRatioPoint)
         funcOfRightPoint = self.__func__(rightRatioPoint)
 
-        while not intervalLengths or intervalLengths[-1] >= self.__precison:
+        while not intervalLengths or intervalLengths[-1] >= self.__precision:
             intervalLengths.append(rightBorder - leftBorder)
             if funcOfLeftPoint < funcOfRightPoint:
                 rightBorder = rightRatioPoint
                 rightRatioPoint, funcOfRightPoint = leftRatioPoint, funcOfLeftPoint
                 leftRatioPoint = leftBorder + (rightBorder - leftBorder) * self.__GOLDEN_RATIO
                 funcOfLeftPoint = self.__func__(leftRatioPoint)
-                continue
 
-            leftBorder = leftRatioPoint
-            leftRatioPoint, funcOfLeftPoint = rightRatioPoint, funcOfRightPoint
-            rightRatioPoint = rightBorder - (rightBorder - leftBorder) * self.__GOLDEN_RATIO
-            funcOfRightPoint = self.__func__(rightRatioPoint)
+            else:
+                leftBorder = leftRatioPoint
+                leftRatioPoint, funcOfLeftPoint = rightRatioPoint, funcOfRightPoint
+                rightRatioPoint = rightBorder - (rightBorder - leftBorder) * self.__GOLDEN_RATIO
+                funcOfRightPoint = self.__func__(rightRatioPoint)
 
         return (leftBorder + rightBorder) / 2, intervalLengths, len(intervalLengths)
 
@@ -82,7 +83,7 @@ class Solution:
         intervalLengths = [intervalLength]
 
         iterationAmount = 0
-        while self.__fibonacci__(iterationAmount) <= intervalLength / self.__precison:
+        while self.__fibonacci__(iterationAmount) <= intervalLength / self.__precision:
             iterationAmount += 1
 
         leftFibPoint = leftBorder + self.__fibonacciRatio__(iterationAmount, iterationAmount + 2) * intervalLength
@@ -97,16 +98,18 @@ class Solution:
                 leftBorder = leftFibPoint
                 intervalLength = rightBorder - leftBorder
                 leftFibPoint, funcOfLeftPoint = rightFibPoint, funcOfRightPoint
-                rightFibPoint = leftBorder + self.__fibonacciRatio__(iterationAmount - counter + 1,
-                                                                     iterationAmount - counter + 2) * intervalLength
+                rightFibPoint = leftBorder + self.__fibonacciRatio__(
+                    iterationAmount - counter + 1,
+                    iterationAmount - counter + 2) * intervalLength
                 funcOfRightPoint = self.__func__(rightFibPoint)
 
             else:
                 rightBorder = rightFibPoint
                 intervalLength = rightBorder - leftBorder
                 rightFibPoint, funcOfRightPoint = leftFibPoint, funcOfLeftPoint
-                leftFibPoint = leftBorder + self.__fibonacciRatio__(iterationAmount - counter,
-                                                                    iterationAmount - counter + 2) * intervalLength
+                leftFibPoint = leftBorder + self.__fibonacciRatio__(
+                    iterationAmount - counter,
+                    iterationAmount - counter + 2) * intervalLength
                 funcOfLeftPoint = self.__func__(leftFibPoint)
 
             counter += 1
@@ -114,7 +117,6 @@ class Solution:
 
         if self.__func__(leftFibPoint) == self.__func__(rightFibPoint):
             leftBorder = leftFibPoint
-
         else:
             rightBorder = rightFibPoint
 
@@ -136,30 +138,29 @@ class Solution:
         middle = (leftBorder + rightBorder) / 2
         funcOfMid = self.__func__(middle)
 
-        while not intervalLengths or intervalLengths[-1] >= self.__precison:
+        while not intervalLengths or intervalLengths[-1] >= self.__precision:
             prevMin = parabolaMin
             intervalLengths.append(rightBorder - leftBorder)
 
             numerator = ((middle - leftBorder) ** 2 * (funcOfMid - funcOfRightBorder)
                          - (middle - rightBorder) ** 2 * (funcOfMid - funcOfLeftBorder))
 
-            denomenator = 2 * ((middle - leftBorder) * (funcOfMid - funcOfRightBorder)
+            denominator = 2 * ((middle - leftBorder) * (funcOfMid - funcOfRightBorder)
                                - (middle - rightBorder) * (funcOfMid - funcOfLeftBorder))
 
-            parabolaMin = middle - (numerator / denomenator)
+            parabolaMin = middle - (numerator / denominator)
 
             if prevMin:
                 delta = parabolaMin - prevMin
-                if fabs(delta) < self.__precison:
+                if fabs(delta) < self.__precision:
                     return parabolaMin, intervalLengths, len(intervalLengths)
 
             funcOfParabolaMin = self.__func__(parabolaMin)
             if fabs(parabolaMin - leftBorder) >= fabs(parabolaMin - rightBorder):
                 rightBorder, funcOfRightBorder = parabolaMin, funcOfParabolaMin
-                continue
-
-            leftBorder, funcOfLeftBorder = middle, funcOfMid
-            middle, funcOfMid = parabolaMin, funcOfParabolaMin
+            else:
+                leftBorder, funcOfLeftBorder = middle, funcOfMid
+                middle, funcOfMid = parabolaMin, funcOfParabolaMin
 
         return (rightBorder + leftBorder) / 2, intervalLengths, len(intervalLengths)
 
@@ -167,34 +168,31 @@ class Solution:
     def brentMethod(self):
         leftBorder = self.__leftBorder
         rightBorder = self.__rightBorder
-        parabolaMin = 0
 
         minimum = secondMin = thirdMin = (leftBorder + rightBorder) / 2
         funcOfMin = funcOfSecondMin = funcOfThirdMin = self.__func__(minimum)
 
         intervalLengths = []
 
-        while not intervalLengths or intervalLengths[-1] >= self.__precison:
+        while not intervalLengths or intervalLengths[-1] >= self.__precision:
             intervalLengths.append(rightBorder - leftBorder)
-            prevMin = parabolaMin
 
             if funcOfMin not in [funcOfSecondMin, funcOfThirdMin] and funcOfSecondMin != funcOfThirdMin:
                 numerator = ((secondMin - minimum) ** 2 * (funcOfSecondMin - funcOfThirdMin)
                              - (secondMin - thirdMin) ** 2 * (funcOfSecondMin - funcOfMin))
 
-                denomenator = 2 * ((secondMin - minimum) * (funcOfSecondMin - funcOfThirdMin)
+                denominator = 2 * ((secondMin - minimum) * (funcOfSecondMin - funcOfThirdMin)
                                    - (secondMin - thirdMin) * (funcOfSecondMin - funcOfMin))
 
-                parabolaMin = secondMin - (numerator / denomenator)
+                parabolaMin = secondMin - (numerator / denominator)
 
             else:
                 if minimum < (rightBorder - leftBorder) / 2:
                     parabolaMin = minimum + self.__GOLDEN_RATIO * (rightBorder - minimum)
-
                 else:
                     parabolaMin = minimum - self.__GOLDEN_RATIO * (minimum - leftBorder)
 
-            if fabs(parabolaMin - minimum) < self.__precison:
+            if fabs(parabolaMin - minimum) < self.__precision:
                 return parabolaMin, intervalLengths, len(intervalLengths)
 
             funcOfParabolaMin = self.__func__(parabolaMin)
@@ -223,11 +221,7 @@ class Solution:
 
     @lru_cache(maxsize=1000)
     def __fibonacci__(self, n):
-        match n:
-            case (0 | 1):
-                return 1
-            case _:
-                return self.__fibonacci__(n - 1) + self.__fibonacci__(n - 2)
+        return 1 if n in [0, 1] else self.__fibonacci__(n - 1) + self.__fibonacci__(n - 2)
 
     def __fibonacciRatio__(self, n1, n2):
         return self.__fibonacci__(n1) / self.__fibonacci__(n2)

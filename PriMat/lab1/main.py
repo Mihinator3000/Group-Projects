@@ -8,7 +8,7 @@ if __name__ == "__main__":
     plt.title("Interval range (iteration)")
 
     solution.bisectionMethod()
-    solution.goldenRatioMethond()
+    solution.goldenRatioMethod()
     solution.fibonacciMethod()
     solution.parablesMethod()
     solution.brentMethod()
