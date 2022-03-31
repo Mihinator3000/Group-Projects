@@ -8,8 +8,8 @@ def drawGraph(func):
     def wrapper(solution):
         result = func(solution)
 
-        print("Minimum found, value is: ", result[0])
-        plt.plot([i for i in range(result[2])], result[1], label=func.__name__)
+        print(f"Minimum found by {func.__name__}, value is: {result[0]}")
+        plt.plot([i for i in range(len(result[1]))], result[1], label=func.__name__)
 
         return result
 
@@ -28,6 +28,7 @@ class Solution:
         indent = self.__precision / 2.01
         leftBorder = self.__leftBorder
         rightBorder = self.__rightBorder
+
         intervalLengths = []
 
         while not intervalLengths or intervalLengths[-1] >= self.__precision:
@@ -39,11 +40,10 @@ class Solution:
 
             if self.__func__(indentToLeft) >= self.__func__(indentToRight):
                 leftBorder = indentToLeft
-                continue
+            else:
+                rightBorder = indentToRight
 
-            rightBorder = indentToRight
-
-        return (leftBorder + rightBorder) / 2, intervalLengths, len(intervalLengths)
+        return (leftBorder + rightBorder) / 2, intervalLengths
 
     @drawGraph
     def goldenRatioMethod(self):
@@ -65,14 +65,13 @@ class Solution:
                 rightRatioPoint, funcOfRightPoint = leftRatioPoint, funcOfLeftPoint
                 leftRatioPoint = leftBorder + (rightBorder - leftBorder) * self.__GOLDEN_RATIO
                 funcOfLeftPoint = self.__func__(leftRatioPoint)
-
             else:
                 leftBorder = leftRatioPoint
                 leftRatioPoint, funcOfLeftPoint = rightRatioPoint, funcOfRightPoint
                 rightRatioPoint = rightBorder - (rightBorder - leftBorder) * self.__GOLDEN_RATIO
                 funcOfRightPoint = self.__func__(rightRatioPoint)
 
-        return (leftBorder + rightBorder) / 2, intervalLengths, len(intervalLengths)
+        return (leftBorder + rightBorder) / 2, intervalLengths
 
     @drawGraph
     def fibonacciMethod(self):
@@ -102,7 +101,6 @@ class Solution:
                     iterationAmount - counter + 1,
                     iterationAmount - counter + 2) * intervalLength
                 funcOfRightPoint = self.__func__(rightFibPoint)
-
             else:
                 rightBorder = rightFibPoint
                 intervalLength = rightBorder - leftBorder
@@ -122,7 +120,7 @@ class Solution:
 
         intervalLengths.append(rightBorder - leftBorder)
 
-        return (rightBorder + leftBorder) / 2, intervalLengths, len(intervalLengths)
+        return (rightBorder + leftBorder) / 2, intervalLengths
 
     @drawGraph
     def parablesMethod(self):
@@ -153,7 +151,7 @@ class Solution:
             if prevMin:
                 delta = parabolaMin - prevMin
                 if fabs(delta) < self.__precision:
-                    return parabolaMin, intervalLengths, len(intervalLengths)
+                    return parabolaMin, intervalLengths
 
             funcOfParabolaMin = self.__func__(parabolaMin)
             if fabs(parabolaMin - leftBorder) >= fabs(parabolaMin - rightBorder):
@@ -162,7 +160,7 @@ class Solution:
                 leftBorder, funcOfLeftBorder = middle, funcOfMid
                 middle, funcOfMid = parabolaMin, funcOfParabolaMin
 
-        return (rightBorder + leftBorder) / 2, intervalLengths, len(intervalLengths)
+        return (rightBorder + leftBorder) / 2, intervalLengths
 
     @drawGraph
     def brentMethod(self):
@@ -193,7 +191,7 @@ class Solution:
                     parabolaMin = minimum - self.__GOLDEN_RATIO * (minimum - leftBorder)
 
             if fabs(parabolaMin - minimum) < self.__precision:
-                return parabolaMin, intervalLengths, len(intervalLengths)
+                return parabolaMin, intervalLengths
 
             funcOfParabolaMin = self.__func__(parabolaMin)
             if funcOfParabolaMin <= funcOfMin:
@@ -217,7 +215,7 @@ class Solution:
                 elif funcOfParabolaMin <= funcOfSecondMin or thirdMin in [minimum, secondMin]:
                     thirdMin, funcOfThirdMin = parabolaMin, funcOfParabolaMin
 
-        return (leftBorder + rightBorder) / 2, intervalLengths, len(intervalLengths)
+        return (leftBorder + rightBorder) / 2, intervalLengths
 
     @lru_cache(maxsize=1000)
     def __fibonacci__(self, n):
