@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 import matplotlib.pyplot as plt
 import numdifftools as nd
 from math import sqrt, fabs
@@ -71,8 +73,8 @@ class Solution:
             optimization_points.append(optimization_point)
 
             amount_func_calculations += 2
-            if (optimization_point.distance_to_other(prev_point) <= self.__precision or
-                    optimization_point.func_distance_to_other(prev_point) <= self.__precision):
+            if (optimization_point.func_distance_to_other(prev_point) <= self.__precision or
+                    optimization_point.distance_to_other(prev_point) <= self.__precision):
                 return optimization_points, amount_func_calculations
 
             prev_point.x, prev_point.y = optimization_point.x, optimization_point.y
@@ -93,8 +95,8 @@ class Solution:
             optimization_points.append(optimization_point)
 
             amount_func_calculations += 2
-            if (optimization_point.distance_to_other(prev_point) <= self.__precision or
-                    optimization_point.func_distance_to_other(prev_point) <= self.__precision):
+            if (optimization_point.func_distance_to_other(prev_point) <= self.__precision or
+                    optimization_point.distance_to_other(prev_point) <= self.__precision):
                 return optimization_points, amount_func_calculations
 
             prev_point.x, prev_point.y = optimization_point.x, optimization_point.y
@@ -118,27 +120,103 @@ class Solution:
 
         while True:
             optimization_points.append(optimization_point)
+
+            amount_func_calculations += 2
+            if (optimization_point.func_distance_to_other(prev_point) <= self.__precision or
+                    optimization_point.distance_to_other(prev_point) <= self.__precision):
+                return optimization_points, amount_func_calculations
+
             prev_point.x, prev_point.y = optimization_point.x, optimization_point.y
+
+            x, y = nd.Gradient(self.__func__)(optimization_point.to_list())
+            gradient = Point(x, y)
+
+            learning_rate, search_amount_calc = self.__golden_search__(optimization_point, gradient, 0, 1)
+            amount_func_calculations += search_amount_calc
+
+            optimization_point.x -= x * learning_rate
+            optimization_point.y -= y * learning_rate
+
+    def fibonacci_method(self):
+        prev_point = Point(INF, INF)
+        optimization_point = self.__start_point
+        amount_func_calculations = 0
+        optimization_points = []
+
+        while True:
+            optimization_points.append(optimization_point)
 
             amount_func_calculations += 2
             if (optimization_point.distance_to_other(prev_point) <= self.__precision or
                     optimization_point.func_distance_to_other(prev_point) <= self.__precision):
                 return optimization_points, amount_func_calculations
 
+            prev_point.x, prev_point.y = optimization_point.x, optimization_point.y
+
             x, y = nd.Gradient(self.__func__)(optimization_point.to_list())
             gradient = Point(x, y)
 
-            learning_rate = self.__golden_search__(optimization_point, gradient, 0, 1)
+            learning_rate, search_amount_calc = self.__fibonacci_search__(optimization_point, gradient, 0, 1)
+            amount_func_calculations += search_amount_calc
 
             optimization_point.x -= x * learning_rate
             optimization_point.y -= y * learning_rate
 
+    def __fibonacci_search__(self, point, gradient, left_border, right_border):
+        interval_length = right_border - left_border
+        iteration_amount = 0
+
+        while self.__fibonacci__(iteration_amount) <= interval_length / self.__precision:
+            iteration_amount += 1
+
+        left_fib_point = left_border + self.__fibonacciRatio__(
+            iteration_amount,
+            iteration_amount + 2) * interval_length
+
+        right_fib_point = left_border + self.__fibonacciRatio__(
+            iteration_amount + 1,
+            iteration_amount + 2) * interval_length
+
+        func_of_left_point = self.__func__((point - gradient * left_fib_point).to_list())
+        func_of_right_point = self.__func__((point - gradient * right_fib_point).to_list())
+
+        counter = 0
+        while counter != iteration_amount:
+            if func_of_left_point > func_of_right_point:
+                left_border = left_fib_point
+                interval_length = right_border - left_border
+                left_fib_point, func_of_left_point = right_fib_point, func_of_right_point
+                right_fib_point = left_border + self.__fibonacciRatio__(
+                    iteration_amount - counter + 1,
+                    iteration_amount - counter + 2) * interval_length
+                func_of_right_point = self.__func__((point - gradient * right_fib_point).to_list())
+            else:
+                right_border = right_fib_point
+                interval_length = right_border - left_border
+                right_fib_point, func_of_right_point = left_fib_point, func_of_left_point
+                left_fib_point = left_border + self.__fibonacciRatio__(
+                    iteration_amount - counter,
+                    iteration_amount - counter + 2) * interval_length
+                func_of_left_point = self.__func__((point - gradient * left_fib_point).to_list())
+
+            counter += 1
+
+        if func_of_left_point == func_of_right_point:
+            left_border = left_fib_point
+        else:
+            right_border = right_fib_point
+
+        return (right_border + left_border) / 2, iteration_amount + 2
+
     def __golden_search__(self, point, gradient, left_border, right_border):
+        amount_func_calculations = 0
+
         ratio_const = (3 - sqrt(5)) / 2
         left_ratio_point = left_border + (right_border - left_border) * ratio_const
         right_ratio_point = right_border - (right_border - left_border) * ratio_const
 
         while fabs(left_border - right_border) > self.__precision:
+            amount_func_calculations += 2
             func_of_left = self.__func__((point - gradient * left_ratio_point).to_list())
             func_of_right = self.__func__((point - gradient * right_ratio_point).to_list())
 
@@ -150,7 +228,7 @@ class Solution:
             left_ratio_point = left_border + (right_border - left_border) * ratio_const
             right_ratio_point = right_border - (right_border - left_border) * ratio_const
 
-        return (left_border + right_border) / 2
+        return (left_border + right_border) / 2, amount_func_calculations
 
     @staticmethod
     def __func__(args):
@@ -159,3 +237,10 @@ class Solution:
     @staticmethod
     def __der_func__(args):
         return 2 * args[0] + 2 * args[1]
+
+    @lru_cache(maxsize=1000)
+    def __fibonacci__(self, n):
+        return 1 if n in [0, 1] else self.__fibonacci__(n - 1) + self.__fibonacci__(n - 2)
+
+    def __fibonacciRatio__(self, n1, n2):
+        return self.__fibonacci__(n1) / self.__fibonacci__(n2)

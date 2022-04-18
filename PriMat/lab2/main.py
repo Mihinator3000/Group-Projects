@@ -7,3 +7,4 @@ if __name__ == "__main__":
     print(solution.constant_learning_rate_method(0.1))
     print(solution.step_fragmentation_method(0.1, 0.95))
     print(solution.golden_ratio_method())
+    print(solution.fibonacci_method())
