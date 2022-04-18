@@ -38,6 +38,9 @@ class Point:
 
     def to_list(self):
         return [self.x, self.y]
+    
+    def copy(self):
+        return Point(self.x, self.y)
 
     def __add__(self, other):
         if type(other) != Point:
@@ -65,41 +68,40 @@ class Solution:
 
     def constant_learning_rate_method(self, learning_rate):
         prev_point = Point(INF, INF)
-        optimization_point = self.__start_point
+        optimization_point = self.__start_point.copy()
         amount_func_calculations = 0
         optimization_points = []
 
         while True:
-            optimization_points.append(optimization_point)
+            optimization_points.append(optimization_point.copy())
 
             amount_func_calculations += 2
             if (optimization_point.func_distance_to_other(prev_point) <= self.__precision or
                     optimization_point.distance_to_other(prev_point) <= self.__precision):
                 return optimization_points, amount_func_calculations
 
-            prev_point.x, prev_point.y = optimization_point.x, optimization_point.y
+            prev_point = optimization_point.copy()
             x, y = nd.Gradient(self.__func__)(optimization_point.to_list())
             optimization_point.x -= x * learning_rate
             optimization_point.y -= y * learning_rate
             amount_func_calculations += 1
 
-    def step_fragmentation_method(self, const, fragmentation_const):
+    def step_fragmentation_method(self, const, fragmentation_const, start_learning_rate):
         prev_point = Point(INF, INF)
-        optimization_point = self.__start_point
+        optimization_point = self.__start_point.copy()
         amount_func_calculations = 0
-        start_learning_rate = 1
         learning_rate = start_learning_rate
         optimization_points = []
 
         while True:
-            optimization_points.append(optimization_point)
+            optimization_points.append(optimization_point.copy())
 
             amount_func_calculations += 2
             if (optimization_point.func_distance_to_other(prev_point) <= self.__precision or
                     optimization_point.distance_to_other(prev_point) <= self.__precision):
                 return optimization_points, amount_func_calculations
 
-            prev_point.x, prev_point.y = optimization_point.x, optimization_point.y
+            prev_point = optimization_point.copy()
             x, y = nd.Gradient(self.__func__)(optimization_point.to_list())
             optimization_point.x -= x * learning_rate
             optimization_point.y -= y * learning_rate
@@ -114,19 +116,19 @@ class Solution:
 
     def golden_ratio_method(self):
         prev_point = Point(INF, INF)
-        optimization_point = self.__start_point
+        optimization_point = self.__start_point.copy()
         amount_func_calculations = 0
         optimization_points = []
 
         while True:
-            optimization_points.append(optimization_point)
+            optimization_points.append(optimization_point.copy())
 
             amount_func_calculations += 2
             if (optimization_point.func_distance_to_other(prev_point) <= self.__precision or
                     optimization_point.distance_to_other(prev_point) <= self.__precision):
                 return optimization_points, amount_func_calculations
 
-            prev_point.x, prev_point.y = optimization_point.x, optimization_point.y
+            prev_point = optimization_point.copy()
 
             x, y = nd.Gradient(self.__func__)(optimization_point.to_list())
             gradient = Point(x, y)
@@ -139,19 +141,22 @@ class Solution:
 
     def fibonacci_method(self):
         prev_point = Point(INF, INF)
-        optimization_point = self.__start_point
+        optimization_point = self.__start_point.copy()
         amount_func_calculations = 0
         optimization_points = []
 
         while True:
-            optimization_points.append(optimization_point)
+            optimization_points.append(optimization_point.copy())
 
             amount_func_calculations += 2
             if (optimization_point.distance_to_other(prev_point) <= self.__precision or
                     optimization_point.func_distance_to_other(prev_point) <= self.__precision):
                 return optimization_points, amount_func_calculations
 
-            prev_point.x, prev_point.y = optimization_point.x, optimization_point.y
+            print(optimization_point.distance_to_other(prev_point))
+            print(optimization_point.func_distance_to_other(prev_point))
+
+            prev_point = optimization_point.copy()
 
             x, y = nd.Gradient(self.__func__)(optimization_point.to_list())
             gradient = Point(x, y)
