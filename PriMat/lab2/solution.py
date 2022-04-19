@@ -1,22 +1,9 @@
 from functools import lru_cache
 
-import matplotlib.pyplot as plt
 import numdifftools as nd
 from math import sqrt, fabs
 
 INF = 10 ** 9
-
-
-def drawGraph(func):
-    def wrapper(solution):
-        result = func(solution)
-
-        print("Minimum found, value is: ", result)
-        # plt.plot([i for i in range(result[2])], result[1], label=func.__name__)
-
-        return result
-
-    return wrapper
 
 
 class Point:
@@ -38,7 +25,7 @@ class Point:
 
     def to_list(self):
         return [self.x, self.y]
-    
+
     def copy(self):
         return Point(self.x, self.y)
 
@@ -59,6 +46,9 @@ class Point:
 
     def __truediv__(self, number):
         return Point(self.x / number, self.y / number)
+
+    def __pow__(self, power, modulo=None):
+        return self.x ** power + self.y ** power
 
 
 class Solution:
@@ -109,7 +99,7 @@ class Solution:
 
             func_of_point = self.__func__([optimization_point.x, optimization_point.y])
             func_of_prev_point = (self.__func__([prev_point.x, prev_point.y]) - const * learning_rate * fabs(
-                                  self.__der_func__([prev_point.x, prev_point.y])))
+                self.__der_func__([prev_point.x, prev_point.y])))
             amount_func_calculations += 3
 
             while func_of_point > func_of_prev_point:
@@ -167,6 +157,46 @@ class Solution:
 
             optimization_point.x -= x * learning_rate
             optimization_point.y -= y * learning_rate
+
+    def fletcher_reeves_method(self):
+        amount_func_calculations = 0
+
+        prev_point = Point(INF, INF)
+        x, y = nd.Gradient(self.__func__)(prev_point.to_list())
+        prev_gradient = Point(x, y)
+        prev_gradient_square = prev_gradient ** 2
+
+        optimization_point = self.__start_point.copy()
+        x, y = nd.Gradient(self.__func__)(optimization_point.to_list())
+        gradient = Point(x, y)
+        gradient_square = gradient ** 2
+
+        optimization_points = []
+
+        amount_func_calculations += 2
+
+        while gradient_square > self.__precision:
+            optimization_points.append(optimization_point.copy())
+
+            amount_func_calculations += 2
+
+            learning_rate, search_amount_calc = self.__fibonacci_search__(optimization_point, gradient, 0, 1)
+
+            amount_func_calculations += search_amount_calc
+
+            optimization_point.x -= x * learning_rate
+            optimization_point.y -= y * learning_rate
+
+            x, y = nd.Gradient(self.__func__)(optimization_point.to_list())
+            gradient = Point(x, y)
+            gradient_square = gradient ** 2
+
+            beta = gradient_square / prev_gradient_square
+
+            prev_gradient = prev_gradient * beta + gradient
+            prev_gradient_square = prev_gradient ** 2
+
+        return optimization_points, amount_func_calculations
 
     def __golden_search__(self, point, gradient, left_border, right_border):
         amount_func_calculations = 0
