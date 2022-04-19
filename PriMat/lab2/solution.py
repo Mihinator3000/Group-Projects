@@ -161,11 +161,6 @@ class Solution:
     def fletcher_reeves_method(self):
         amount_func_calculations = 0
 
-        prev_point = Point(INF, INF)
-        x, y = nd.Gradient(self.__func__)(prev_point.to_list())
-        prev_gradient = Point(x, y)
-        prev_gradient_square = prev_gradient ** 2
-
         optimization_point = self.__start_point.copy()
         x, y = nd.Gradient(self.__func__)(optimization_point.to_list())
         gradient = Point(x, y)
@@ -175,10 +170,11 @@ class Solution:
 
         amount_func_calculations += 2
 
-        while gradient_square > self.__precision:
+        while True:
             optimization_points.append(optimization_point.copy())
 
-            amount_func_calculations += 2
+            if gradient_square < self.__precision:
+                return optimization_points, amount_func_calculations
 
             learning_rate, search_amount_calc = self.__fibonacci_search__(optimization_point, gradient, 0, 1)
 
@@ -187,16 +183,15 @@ class Solution:
             optimization_point.x -= x * learning_rate
             optimization_point.y -= y * learning_rate
 
-            x, y = nd.Gradient(self.__func__)(optimization_point.to_list())
-            gradient = Point(x, y)
+            new_x, new_y = nd.Gradient(self.__func__)(optimization_point.to_list())
+            new_gradient = Point(new_x, new_y)
+            new_gradient_square = new_gradient ** 2
+            amount_func_calculations += 1
+
+            beta = new_gradient_square / gradient_square
+
+            gradient = new_gradient + gradient * beta
             gradient_square = gradient ** 2
-
-            beta = gradient_square / prev_gradient_square
-
-            prev_gradient = prev_gradient * beta + gradient
-            prev_gradient_square = prev_gradient ** 2
-
-        return optimization_points, amount_func_calculations
 
     def __golden_search__(self, point, gradient, left_border, right_border):
         amount_func_calculations = 0

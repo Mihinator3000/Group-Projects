@@ -45,7 +45,8 @@ if __name__ == "__main__":
     fibonacci_method = solution.fibonacci_method()
     draw_graph(fibonacci_method, "purple")
 
-    print(solution.fletcher_reeves_method())
+    fletcher_reeves_method = solution.fletcher_reeves_method()
+    draw_graph(fletcher_reeves_method, "orange")
 
     ax.view_init(25, 25)
     plt.show()
