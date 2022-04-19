@@ -108,11 +108,15 @@ class Solution:
             amount_func_calculations += 1
 
             func_of_point = self.__func__([optimization_point.x, optimization_point.y])
-            func_of_prev_point = self.__der_func__([prev_point.x, prev_point.y])
-            amount_func_calculations += 2
+            func_of_prev_point = (self.__func__([prev_point.x, prev_point.y]) - const * learning_rate * fabs(
+                                  self.__der_func__([prev_point.x, prev_point.y])))
+            amount_func_calculations += 3
 
-            while func_of_point <= func_of_prev_point - const * learning_rate * fabs(func_of_prev_point):
+            while func_of_point > func_of_prev_point:
                 learning_rate *= fragmentation_const
+                func_of_prev_point = (self.__func__([prev_point.x, prev_point.y]) - const * learning_rate * fabs(
+                    self.__der_func__([prev_point.x, prev_point.y])))
+                amount_func_calculations += 2
 
     def golden_ratio_method(self):
         prev_point = Point(INF, INF)
@@ -153,9 +157,6 @@ class Solution:
                     optimization_point.func_distance_to_other(prev_point) <= self.__precision):
                 return optimization_points, amount_func_calculations
 
-            print(optimization_point.distance_to_other(prev_point))
-            print(optimization_point.func_distance_to_other(prev_point))
-
             prev_point = optimization_point.copy()
 
             x, y = nd.Gradient(self.__func__)(optimization_point.to_list())
@@ -166,6 +167,28 @@ class Solution:
 
             optimization_point.x -= x * learning_rate
             optimization_point.y -= y * learning_rate
+
+    def __golden_search__(self, point, gradient, left_border, right_border):
+        amount_func_calculations = 0
+
+        ratio_const = (3 - sqrt(5)) / 2
+        left_ratio_point = left_border + (right_border - left_border) * ratio_const
+        right_ratio_point = right_border - (right_border - left_border) * ratio_const
+
+        while fabs(left_border - right_border) > self.__precision:
+            amount_func_calculations += 2
+            func_of_left = self.__func__((point - gradient * left_ratio_point).to_list())
+            func_of_right = self.__func__((point - gradient * right_ratio_point).to_list())
+
+            if func_of_left < func_of_right:
+                right_border = right_ratio_point
+            else:
+                left_border = left_ratio_point
+
+            left_ratio_point = left_border + (right_border - left_border) * ratio_const
+            right_ratio_point = right_border - (right_border - left_border) * ratio_const
+
+        return (left_border + right_border) / 2, amount_func_calculations
 
     def __fibonacci_search__(self, point, gradient, left_border, right_border):
         interval_length = right_border - left_border
@@ -212,28 +235,6 @@ class Solution:
             right_border = right_fib_point
 
         return (right_border + left_border) / 2, iteration_amount + 2
-
-    def __golden_search__(self, point, gradient, left_border, right_border):
-        amount_func_calculations = 0
-
-        ratio_const = (3 - sqrt(5)) / 2
-        left_ratio_point = left_border + (right_border - left_border) * ratio_const
-        right_ratio_point = right_border - (right_border - left_border) * ratio_const
-
-        while fabs(left_border - right_border) > self.__precision:
-            amount_func_calculations += 2
-            func_of_left = self.__func__((point - gradient * left_ratio_point).to_list())
-            func_of_right = self.__func__((point - gradient * right_ratio_point).to_list())
-
-            if func_of_left < func_of_right:
-                right_border = right_ratio_point
-            else:
-                left_border = left_ratio_point
-
-            left_ratio_point = left_border + (right_border - left_border) * ratio_const
-            right_ratio_point = right_border - (right_border - left_border) * ratio_const
-
-        return (left_border + right_border) / 2, amount_func_calculations
 
     @staticmethod
     def __func__(args):
