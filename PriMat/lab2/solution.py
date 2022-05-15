@@ -169,19 +169,22 @@ class Solution:
         optimization_points = []
 
         amount_func_calculations += 2
+        new_x, new_y = x, y
+
+        new_x, new_y = x, y
 
         while True:
             optimization_points.append(optimization_point.copy())
 
-            if gradient_square < self.__precision:
+            if gradient_square <= self.__precision:
                 return optimization_points, amount_func_calculations
 
             learning_rate, search_amount_calc = self.__fibonacci_search__(optimization_point, gradient, 0, 1)
 
             amount_func_calculations += search_amount_calc
 
-            optimization_point.x -= x * learning_rate
-            optimization_point.y -= y * learning_rate
+            optimization_point.x -= new_x * learning_rate
+            optimization_point.y -= new_y * learning_rate
 
             new_x, new_y = nd.Gradient(self.__func__)(optimization_point.to_list())
             new_gradient = Point(new_x, new_y)
@@ -192,6 +195,7 @@ class Solution:
 
             gradient = new_gradient + gradient * beta
             gradient_square = gradient ** 2
+            print(gradient_square)
 
     def __golden_search__(self, point, gradient, left_border, right_border):
         amount_func_calculations = 0
@@ -263,11 +267,11 @@ class Solution:
 
     @staticmethod
     def __func__(args):
-        return args[0] ** 2 + args[1] ** 2
+        return args[0] ** 2 + 5 * args[1] ** 2
 
     @staticmethod
     def __der_func__(args):
-        return 2 * args[0] + 2 * args[1]
+        return 2 * args[0] + 10 * args[1]
 
     @lru_cache(maxsize=1000)
     def __fibonacci__(self, n):
