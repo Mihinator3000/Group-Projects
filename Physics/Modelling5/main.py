@@ -81,13 +81,13 @@ if __name__ == '__main__':
     theta, phi = np.linspace(0, 2 * np.pi, 360), np.linspace(0, 2 * np.pi, 360)
     tuple_phi, tuple_theta = np.meshgrid(theta, phi)
 
-    r = calculate_func(tuple_theta, tuple_phi, 2, 0)
+    r = calculate_func(tuple_theta, tuple_phi, 10, -8)
     max_r = np.max(r)
 
     polar_subplot = draw_axis(fig_2d, [-max_r, max_r])
 
     draw_tick_circles(polar_subplot, max_r)
-    draw_func_plot(tuple_theta, r, polar_subplot)
+    draw_func_plot(theta, np.amax(r, axis=1), polar_subplot)
     draw_func_plot_3d(fig_3d, tuple_theta, tuple_phi, r)
 
     plt.yticks([])
