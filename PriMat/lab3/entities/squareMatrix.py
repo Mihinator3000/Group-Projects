@@ -23,8 +23,22 @@ class SquareMatrix:
 
         return scrMatrix.SCRMatrix(data, ind, ind_ptr)
 
+    def print(self):
+        for row in self.arr:
+            print(row)
+
     def __getitem__(self, index: int) -> []:
         return self.arr[index]
+
+    def __mul__(self, other: 'SquareMatrix') -> 'SquareMatrix':
+        n = len(self.arr)
+        matrix = SquareMatrix.of_size(n)
+        for i in range(n):
+            for j in range(n):
+                for k in range(n):
+                    matrix.arr[i][j] += self.arr[i][k] * other.arr[k][j]
+
+        return matrix
 
     @staticmethod
     def of_size(n: int):
