@@ -6,7 +6,6 @@ class JacobiSystemSolver:
     def __init__(self, a: SCRMatrix, b: [], precision: float):
         self.a = a
         self.b = b
-        (self.l, self.u) = LUDecomposition(a).decompose()
         self.precision = precision
 
     def solve(self) -> []:
@@ -32,8 +31,11 @@ class JacobiSystemSolver:
         if len(arr1) != len(arr2):
             raise IndexError("Array dimensions are not equal")
 
+        sum = 0
         for val1, val2 in zip(arr1, arr2):
-            if abs(val1 - val2) >= self.precision:
-                return False
+            sum += (val1 - val2) ** 2
+
+        if sum >= self.precision:
+            return False
 
         return True

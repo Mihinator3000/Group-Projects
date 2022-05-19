@@ -8,7 +8,7 @@ from lab3.algorithms.jacobiSystemSolver import JacobiSystemSolver
 from lab3.algorithms.luDecomposition import LUDecomposition
 from lab3.algorithms.gaussSystemSolver import GaussSystemSolver
 
-import time
+from time import time
 import matplotlib.pyplot as plt
 import sys
 import threading
@@ -71,22 +71,22 @@ def test_matrix_functions_and_system_solutions():
 
 
 def test_system_solutions_on_diagonal_matrices():
-    N = [20 * i for i in range(1, 11)]
+    N = [50 * i for i in range(1, 11)]
 
     t_gauss = []
     t_jacobi = []
 
     for n in N:
         matrix = SquareMatrix.fill_diagonal_advantage(n).to_SCRMatrix()
-        F = [random.randint(n // 2, n * 2) for _ in range(n)]
+        F = [random.randint(-n // 2, n // 2) for _ in range(n)]
 
-        start_time = time.time()
+        start_time = time()
         x_gauss = GaussSystemSolver(matrix, F).solve()
-        t_gauss.append(time.time() - start_time)
+        t_gauss.append(time() - start_time)
 
-        start_time = time.time()
-        x_jacobi = JacobiSystemSolver(matrix, F, 10 ** (-6)).solve()
-        t_jacobi.append(time.time() - start_time)
+        start_time = time()
+        x_jacobi = JacobiSystemSolver(matrix, F, 10 ** (-3)).solve()
+        t_jacobi.append(time() - start_time)
 
         errors = []
         for gauss, jacobi in zip(x_gauss, x_jacobi):
@@ -112,13 +112,13 @@ def test_system_solutions_on_gilbert_matrices():
         matrix = GilbertMatrix(n).to_SCRMatrix()
         F = [random.randint(n // 2, n * 2) for _ in range(n)]
 
-        start_time = time.time()
+        start_time = time()
         x_gauss = GaussSystemSolver(matrix, F).solve()
-        t_gauss.append(time.time() - start_time)
+        t_gauss.append(time() - start_time)
 
-        start_time = time.time()
+        start_time = time()
         x_jacobi = JacobiSystemSolver(matrix, F, 10 ** (-6)).solve()
-        t_jacobi.append(time.time() - start_time)
+        t_jacobi.append(time() - start_time)
 
         errors = []
         for gauss, jacobi in zip(x_gauss, x_jacobi):
@@ -136,13 +136,9 @@ def test_system_solutions_on_gilbert_matrices():
 
 if __name__ == "__main__":
     # test_matrix_functions_and_system_solutions()
-    # thread1 = threading.Thread(target=test_system_solutions_on_diagonal_matrices())
-    # thread1.start()
+    thread1 = threading.Thread(target=test_system_solutions_on_diagonal_matrices())
+    thread1.start()
     # thread2 = threading.Thread(target=test_system_solutions_on_gilbert_matrices())
     # thread2.start()
-    matrix = GilbertMatrix(500).to_SCRMatrix()
-    F = [random.randint(500 // 2, 500 * 2) for _ in range(500)]
-    # print(SeidelSystemSolver(matrix, F, 1).solve())
-    print(GaussSystemSolver(matrix, F).solve())
 
 

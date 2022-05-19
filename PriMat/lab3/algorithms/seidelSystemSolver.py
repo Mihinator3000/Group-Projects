@@ -20,7 +20,6 @@ class SeidelSystemSolver:
                 s2 = sum(self.a.get(i, j) * x[j] for j in range(i + 1, n))
                 new_x[i] = (self.b[i] - s1 - s2) / self.a.get(i, i)
 
-            print(new_x)
             if self.__range_between_arrays(x, new_x):
                 return new_x
 
@@ -30,8 +29,11 @@ class SeidelSystemSolver:
         if len(arr1) != len(arr2):
             raise IndexError("Array dimensions are not equal")
 
+        sum = 0
         for val1, val2 in zip(arr1, arr2):
-            if abs(val1 - val2) >= self.precision:
-                return False
+            sum += (val1 - val2)**2
+
+        if sum >= self.precision:
+            return False
 
         return True
