@@ -13,7 +13,7 @@ class JacobiSystemSolver:
     def solve(self) -> []:
         n = self.a.get_n()
         x = [0 for _ in range(n)]
-        while True:
+        for _ in range(n**2):
             new_x = [0 for _ in range(n)]
             for i in range(n):
                 si = 0
@@ -27,6 +27,7 @@ class JacobiSystemSolver:
                 return new_x
 
             x = new_x
+        return x
 
     def __range_between_arrays(self, arr1: [], arr2: []):
         if len(arr1) != len(arr2):
