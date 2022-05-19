@@ -17,6 +17,9 @@ if __name__ == "__main__":
     square_matrix.print()
 
     l, u = LUDecomposition(scr_matrix).decompose()
+    print()
     l.to_SquareMatrix().print()
+    print()
     u.to_SquareMatrix().print()
+    print()
     (l.to_SquareMatrix() * u.to_SquareMatrix()).print()
