@@ -1,5 +1,6 @@
 import random
 
+from lab3.algorithms.seidelSystemSolver import SeidelSystemSolver
 from lab3.entities.squareMatrix import SquareMatrix
 from lab3.entities.gilbertMatrix import GilbertMatrix
 from lab3.algorithms.inverseFromLU import InverseFromLU
@@ -137,6 +138,11 @@ if __name__ == "__main__":
     # test_matrix_functions_and_system_solutions()
     # thread1 = threading.Thread(target=test_system_solutions_on_diagonal_matrices())
     # thread1.start()
-    thread2 = threading.Thread(target=test_system_solutions_on_gilbert_matrices())
-    thread2.start()
+    # thread2 = threading.Thread(target=test_system_solutions_on_gilbert_matrices())
+    # thread2.start()
+    matrix = GilbertMatrix(500).to_SCRMatrix()
+    F = [random.randint(500 // 2, 500 * 2) for _ in range(500)]
+    # print(SeidelSystemSolver(matrix, F, 1).solve())
+    print(GaussSystemSolver(matrix, F).solve())
+
 

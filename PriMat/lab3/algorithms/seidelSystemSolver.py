@@ -1,32 +1,30 @@
 from lab3.algorithms.luDecomposition import LUDecomposition
 from lab3.entities.scrMatrix import SCRMatrix
 
+from copy import deepcopy
 
-class JacobiSystemSolver:
+
+class SeidelSystemSolver:
     def __init__(self, a: SCRMatrix, b: [], precision: float):
         self.a = a
         self.b = b
-        (self.l, self.u) = LUDecomposition(a).decompose()
         self.precision = precision
 
     def solve(self) -> []:
         n = self.a.get_n()
         x = [0 for _ in range(n)]
-        for _ in range(n**2):
-            new_x = [0 for _ in range(n)]
+        while True:
+            new_x = deepcopy(x)
             for i in range(n):
-                si = 0
-                for j in range(n):
-                    if i != j:
-                        si += x[j] * self.a.get(i, j)
+                s1 = sum(self.a.get(i, j) * new_x[j] for j in range(i))
+                s2 = sum(self.a.get(i, j) * x[j] for j in range(i + 1, n))
+                new_x[i] = (self.b[i] - s1 - s2) / self.a.get(i, i)
 
-                new_x[i] = (self.b[i] - si) / self.a.get(i, i)
-
+            print(new_x)
             if self.__range_between_arrays(x, new_x):
                 return new_x
 
             x = new_x
-        return x
 
     def __range_between_arrays(self, arr1: [], arr2: []):
         if len(arr1) != len(arr2):
