@@ -1,4 +1,4 @@
-from lab3.algorithms.systemSolver import SystemSolver
+from lab3.algorithms.gaussSystemSolver import GaussSystemSolver
 from lab3.entities.scrMatrix import SCRMatrix
 from lab3.entities.squareMatrix import SquareMatrix
 
@@ -13,7 +13,7 @@ class InverseFromLU:
         for i in range(self.n):
             column = [0 for _ in range(self.n)]
             column[i] = 1
-            matrix.append(SystemSolver(self.a, column).solve())
+            matrix.append(GaussSystemSolver(self.a, column).solve())
 
         return SquareMatrix(matrix).transpose().to_SCRMatrix()
 

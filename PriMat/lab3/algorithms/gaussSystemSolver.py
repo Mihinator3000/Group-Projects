@@ -2,7 +2,7 @@ from lab3.algorithms.luDecomposition import LUDecomposition
 from lab3.entities.scrMatrix import SCRMatrix
 
 
-class SystemSolver:
+class GaussSystemSolver:
     def __init__(self, a: SCRMatrix, b: []):
         self.a = a
         self.b = b

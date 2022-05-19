@@ -33,6 +33,9 @@ class SquareMatrix:
         for row in self.arr:
             print(row)
 
+    def get_n(self):
+        return len(self.arr)
+
     def __getitem__(self, index: int) -> []:
         return self.arr[index]
 
