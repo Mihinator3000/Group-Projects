@@ -5,12 +5,11 @@ from lab3.entities.scrMatrix import SCRMatrix
 class SystemSolver:
     def __init__(self, a: SCRMatrix, b: []):
         self.a = a
-        (self.l, self.u) = LUDecomposition(a).decompose()
         self.b = b
+        (self.l, self.u) = LUDecomposition(a).decompose()
 
     def solve(self) -> []:
         y = self.calculate_y()
-        print(y)
         x = self.calculate_x(y)
         return x
 
@@ -20,11 +19,9 @@ class SystemSolver:
 
         for i in range(1, n):
             yi = self.b[i]
-            for j in range(i - 1):
+            for j in range(i):
                 yi -= y[j] * self.l.get(i, j)
-                print(y[j], self.l.get(i, j), i, j, end='      ')
             y.append(yi / self.l.get(i, i))
-            print()
 
         return y
 
@@ -33,10 +30,10 @@ class SystemSolver:
         x = [0 for _ in range(n)]
         x[n - 1] = (y[n - 1] / self.u.get(n - 1, n - 1))
 
-        for i in range(n - 1, 0, -1):
+        for i in range(n - 1, -1, -1):
             xi = y[i]
             for j in range(n - 1, i, -1):
-                xi -= x[j] * self.l.get(i, j)
-            x[n - i] = (xi / self.l.get(i, i))
+                xi -= x[j] * self.u.get(i, j)
+            x[i] = (xi / self.u.get(i, i))
 
         return x

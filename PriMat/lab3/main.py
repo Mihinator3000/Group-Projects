@@ -1,4 +1,5 @@
 import lab3.entities.squareMatrix as squareMatrix
+from lab3.algorithms.inverseFromLU import InverseFromLU
 from lab3.algorithms.luDecomposition import LUDecomposition
 from lab3.algorithms.systemSolver import SystemSolver
 
@@ -26,4 +27,10 @@ if __name__ == "__main__":
     (l.to_SquareMatrix() * u.to_SquareMatrix()).print()
     print()
     x = SystemSolver(scr_matrix, [9, 1, 4, 3, 5]).solve()
-    print(x)
+    print(x, "\n")
+
+    #matrix.transpose().print()
+    inverse_matrix = InverseFromLU(scr_matrix).calculate()
+    inverse_matrix.to_SquareMatrix().print()
+    print()
+    (matrix * inverse_matrix.to_SquareMatrix()).print()

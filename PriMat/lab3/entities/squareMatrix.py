@@ -23,6 +23,12 @@ class SquareMatrix:
 
         return scrMatrix.SCRMatrix(data, ind, ind_ptr)
 
+    def transpose(self):
+        for i in range(len(self.arr)):
+            for j in range(i):
+                self.arr[i][j], self.arr[j][i] = self.arr[j][i], self.arr[i][j]
+        return self
+
     def print(self):
         for row in self.arr:
             print(row)
