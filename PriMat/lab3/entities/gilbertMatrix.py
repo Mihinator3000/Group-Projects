@@ -1,10 +1,15 @@
-import lab3.entities.scrMatrix as scrMatrix
-import random
+from lab3.entities import scrMatrix
+from lab3.entities.squareMatrix import SquareMatrix
 
 
-class SquareMatrix:
-    def __init__(self, arr: [[]]):
-        self.arr = arr
+class GilbertMatrix:
+    def __init__(self, n: int):
+        self.n = n
+        self.arr = [[] for _ in range(n)]
+
+        for i in range(n):
+            for j in range(n):
+                self.arr[i].append(1 / (i + j + 2 - 1))
 
     def to_SCRMatrix(self):
         data = []
@@ -47,26 +52,5 @@ class SquareMatrix:
             for j in range(n):
                 for k in range(n):
                     matrix.arr[i][j] += self.arr[i][k] * other.arr[k][j]
-
-        return matrix
-
-    @staticmethod
-    def of_size(n: int):
-        return SquareMatrix([[0 for _ in range(n)] for _ in range(n)])
-
-    @staticmethod
-    def from_SCRMatrix(matrix):
-        return matrix.to_SquareMatrix()
-
-    @staticmethod
-    def fill_diagonal_advantage(n: int):
-        matrix = SquareMatrix([[] for _ in range(n)])
-        for i in range(n):
-            for j in range(n):
-                if i == j:
-                    matrix[i].append(random.randint(n // 2, n * 2) * 10**2)
-                    continue
-
-                matrix[i].append(random.randint(n // 2, n * 2) * 10**(-2))
 
         return matrix
