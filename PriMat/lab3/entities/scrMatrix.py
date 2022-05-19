@@ -26,6 +26,9 @@ class SCRMatrix:
 
         return self.data[row_beginning + row_indexes.index(b)] if b in row_indexes else 0
 
+    def get_n(self):
+        return len(self.ind_ptr) - 1
+
     def print(self):
         print(self.data)
         print(self.ind)

@@ -8,7 +8,7 @@ class LUDecomposition:
         self.U = SCRMatrix()
 
     def decompose(self) -> (SCRMatrix, SCRMatrix):
-        n = len(self.matrix.ind_ptr) - 1
+        n = self.matrix.get_n()
         for i in range(n):
             self.L.ind_ptr.append(self.L.ind_ptr[-1])
             self.U.ind_ptr.append(self.U.ind_ptr[-1])

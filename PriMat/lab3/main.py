@@ -1,5 +1,6 @@
 import lab3.entities.squareMatrix as squareMatrix
 from lab3.algorithms.luDecomposition import LUDecomposition
+from lab3.algorithms.systemSolver import SystemSolver
 
 if __name__ == "__main__":
     matrix = squareMatrix.SquareMatrix([
@@ -23,3 +24,6 @@ if __name__ == "__main__":
     u.to_SquareMatrix().print()
     print()
     (l.to_SquareMatrix() * u.to_SquareMatrix()).print()
+    print()
+    x = SystemSolver(scr_matrix, [9, 1, 4, 3, 5]).solve()
+    print(x)
