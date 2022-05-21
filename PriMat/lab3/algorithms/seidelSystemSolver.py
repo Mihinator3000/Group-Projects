@@ -24,6 +24,8 @@ class SeidelSystemSolver:
 
             x = new_x
 
+        # return x
+
     def __range_between_arrays(self, arr1: [], arr2: []):
         if len(arr1) != len(arr2):
             raise IndexError("Array dimensions are not equal")

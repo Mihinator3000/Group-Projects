@@ -10,7 +10,8 @@ class JacobiSystemSolver:
     def solve(self) -> []:
         n = self.a.get_n()
         x = [0 for _ in range(n)]
-        for _ in range(n ** 2):
+        for _ in range(n * (n + 1)):
+        # while True:
             new_x = [0 for _ in range(n)]
             for i in range(n):
                 si = 0

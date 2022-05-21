@@ -21,6 +21,7 @@ class GaussSystemSolver:
             yi = self.b[i]
             for j in range(i):
                 yi -= y[j] * self.l.get(i, j)
+
             y.append(yi / self.l.get(i, i))
 
         return y
