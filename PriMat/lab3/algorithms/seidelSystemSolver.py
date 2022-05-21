@@ -1,4 +1,3 @@
-from lab3.algorithms.luDecomposition import LUDecomposition
 from lab3.entities.scrMatrix import SCRMatrix
 
 from copy import deepcopy
@@ -29,11 +28,8 @@ class SeidelSystemSolver:
         if len(arr1) != len(arr2):
             raise IndexError("Array dimensions are not equal")
 
-        sum = 0
+        elements_sum = 0
         for val1, val2 in zip(arr1, arr2):
-            sum += (val1 - val2)**2
+            elements_sum += (val1 - val2) ** 2
 
-        if sum >= self.precision:
-            return False
-
-        return True
+        return elements_sum < self.precision

@@ -1,4 +1,3 @@
-from lab3.algorithms.luDecomposition import LUDecomposition
 from lab3.entities.scrMatrix import SCRMatrix
 
 
@@ -11,7 +10,7 @@ class JacobiSystemSolver:
     def solve(self) -> []:
         n = self.a.get_n()
         x = [0 for _ in range(n)]
-        for _ in range(n**2):
+        for _ in range(n ** 2):
             new_x = [0 for _ in range(n)]
             for i in range(n):
                 si = 0
@@ -31,11 +30,8 @@ class JacobiSystemSolver:
         if len(arr1) != len(arr2):
             raise IndexError("Array dimensions are not equal")
 
-        sum = 0
+        elements_sum = 0
         for val1, val2 in zip(arr1, arr2):
-            sum += (val1 - val2) ** 2
+            elements_sum += (val1 - val2) ** 2
 
-        if sum >= self.precision:
-            return False
-
-        return True
+        return elements_sum < self.precision

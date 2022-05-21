@@ -1,6 +1,5 @@
 import random
 
-from lab3.algorithms.seidelSystemSolver import SeidelSystemSolver
 from lab3.entities.squareMatrix import SquareMatrix
 from lab3.entities.gilbertMatrix import GilbertMatrix
 from lab3.algorithms.inverseFromLU import InverseFromLU
@@ -71,7 +70,7 @@ def test_matrix_functions_and_system_solutions():
 
 
 def test_system_solutions_on_diagonal_matrices():
-    N = [50 * i for i in range(1, 11)]
+    N = [5 * i for i in range(1, 11)]
 
     t_gauss = []
     t_jacobi = []
@@ -103,7 +102,7 @@ def test_system_solutions_on_diagonal_matrices():
 
 
 def test_system_solutions_on_gilbert_matrices():
-    N = [20 * i for i in range(1, 11)]
+    N = [1 * i for i in range(1, 11)]
 
     t_gauss = []
     t_jacobi = []
@@ -117,7 +116,7 @@ def test_system_solutions_on_gilbert_matrices():
         t_gauss.append(time() - start_time)
 
         start_time = time()
-        x_jacobi = JacobiSystemSolver(matrix, F, 10 ** (-6)).solve()
+        x_jacobi = JacobiSystemSolver(matrix, F, 10 ** (-3)).solve()
         t_jacobi.append(time() - start_time)
 
         errors = []
@@ -136,9 +135,8 @@ def test_system_solutions_on_gilbert_matrices():
 
 if __name__ == "__main__":
     # test_matrix_functions_and_system_solutions()
-    thread1 = threading.Thread(target=test_system_solutions_on_diagonal_matrices())
-    thread1.start()
-    # thread2 = threading.Thread(target=test_system_solutions_on_gilbert_matrices())
-    # thread2.start()
-
-
+    # test_system_solutions_on_diagonal_matrices()
+    # thread1 = threading.Thread(target=)
+    # thread1.start()
+    thread2 = threading.Thread(target=test_system_solutions_on_gilbert_matrices())
+    thread2.start()
