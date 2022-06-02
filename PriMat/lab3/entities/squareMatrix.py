@@ -65,8 +65,20 @@ class SquareMatrix:
             for j in range(n):
                 if i == j:
                     matrix[i].append(random.randint(n // 2, n * 2) * 10**2)
-                    continue
+                else:
+                    matrix[i].append(random.randint(n // 2, n * 2) * 10**(-2))
 
-                matrix[i].append(random.randint(n // 2, n * 2) * 10**(-2))
+        return matrix
+
+    @staticmethod
+    def fill_symmetrical_da(n: int):
+        matrix = SquareMatrix.of_size(n)
+        for i in range(n):
+            for j in range(i, n):
+                if i == j:
+                    matrix[i][j] = random.randint(n // 2, n * 2) * 10 ** 2
+                else:
+                    value = random.randint(n // 2, n * 2) * 10 ** (-2)
+                    matrix[i][j] = matrix[j][i] = value
 
         return matrix
