@@ -7,9 +7,12 @@ class GilbertMatrix:
         self.n = n
         self.arr = [[] for _ in range(n)]
 
-        for i in range(n):
-            for j in range(n):
+    def fill(self):
+        for i in range(self.n):
+            for j in range(self.n):
                 self.arr[i].append(1 / (i + j + 2 - 1))
+
+        return self
 
     def to_SCRMatrix(self):
         data = []

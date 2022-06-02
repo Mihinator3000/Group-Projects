@@ -62,7 +62,7 @@ def test_matrix_functions_and_system_solutions():
     (matrix * inverse_matrix.to_SquareMatrix()).print()
 
     print("\nGilbert Matrix")
-    gilbert_matrix = GilbertMatrix(5)
+    gilbert_matrix = GilbertMatrix(5).fill()
     gilbert_matrix.print()
 
     print("\nDiagonal Matrix")
@@ -109,7 +109,7 @@ def test_system_solutions_on_gilbert_matrices():
     t_seidel = []
 
     for n in N:
-        matrix = GilbertMatrix(n).to_SCRMatrix()
+        matrix = GilbertMatrix(n).fill().to_SCRMatrix()
         F = [random.randint(-100, 100) / 100 for _ in range(n)]
 
         start_time = time()
@@ -135,9 +135,9 @@ def test_system_solutions_on_gilbert_matrices():
 
 
 if __name__ == "__main__":
-    # test_matrix_functions_and_system_solutions()
+    test_matrix_functions_and_system_solutions()
     # thread1 = threading.Thread(target=test_system_solutions_on_diagonal_matrices())
     # thread1.start()
-    thread2 = threading.Thread(target=test_system_solutions_on_gilbert_matrices())
-    thread2.start()
+    # thread2 = threading.Thread(target=test_system_solutions_on_gilbert_matrices())
+    # thread2.start()
 
