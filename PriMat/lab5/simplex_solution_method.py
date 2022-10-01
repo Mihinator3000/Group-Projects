@@ -106,7 +106,7 @@ class SimplexSolutionMethod:
         # Difference between min and max is only in these 2 lines, but im too lazy to make to separate it :)
         while np.any(a_j < 0):
             permissive_column = int(np.argmin(a_j))
-        # ...
+        # TODO: remove code duplication
             permissive_line = self.__find_permissive_line(permissive_column)
             permissive_element = self.vectors[permissive_column][permissive_line]
 

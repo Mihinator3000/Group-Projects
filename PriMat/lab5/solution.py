@@ -28,6 +28,9 @@ if __name__ == '__main__':
     # r_2 = r.Restriction(np.array([1, -1]), r.RestrictionType.GREATER, -3)
     # statement = st.Statement(np.array([3, 4]), [r_1, r_2])
 
+    # TODO: add test cases from statements
+    # TODO: implement input from file
+
     func_vector, b, vectors = statement.create_statement_vectors()
     basis = statement.create_basis()
     basis_content = statement.create_basis_content()
