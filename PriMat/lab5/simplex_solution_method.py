@@ -25,8 +25,9 @@ class SimplexSolutionMethod:
         self.basis_content = basis_content
 
     def __find_permissive_line(self, permissive_column: int) -> int:
-        min_value = np.inf
         permissive_line = -1
+        min_value = np.inf
+
         for index, value in enumerate(self.vectors[permissive_column]):
             if value <= 0:
                 continue
@@ -38,7 +39,35 @@ class SimplexSolutionMethod:
 
         return permissive_line
 
-    def solve_min(self) -> (np.array, float):
+    def __find_permissive_element(self, a_j: np.array) -> (int, int, int):
+        permissive_line = -1
+        permissive_column = -1
+
+        permissive_lines = np.where(self.b < 0)[0]
+        if permissive_lines.size != 0:
+            return 0, permissive_lines[0], self.vectors[0][permissive_lines[0]]
+
+        match self.solution_aim:
+            case SolutionAim.MIN:
+                permissive_column = int(np.argmax(a_j))
+            case SolutionAim.MAX:
+                permissive_column = int(np.argmin(a_j))
+            case _:
+                raise ValueError("Unknown solution aim")
+
+        permissive_line = self.__find_permissive_line(permissive_column)
+        return permissive_column, permissive_line, self.vectors[permissive_column][permissive_line]
+
+    def __make_answer(self, result: float, new_basis_content: np.array) -> (float, np.array):
+        non_zero_indexes = np.isin(new_basis_content, self.basis_content, invert=True)
+        answer = np.zeros(self.func_vector.size - self.basis.size)
+        for index, value in enumerate(non_zero_indexes):
+            if value:
+                answer[new_basis_content[index]] = self.b[index]
+
+        return result, answer
+
+    def solve_min(self, val: float) -> (np.array, float):
         new_basis_content = np.copy(self.basis_content)
 
         b_j = np.dot(self.basis, self.b)
@@ -47,15 +76,19 @@ class SimplexSolutionMethod:
             a_j = np.append(a_j, np.dot(self.basis, vector) - self.func_vector[index])
 
         while np.any(a_j > 0):
-            permissive_column = int(np.argmax(a_j))
-            permissive_line = self.__find_permissive_line(permissive_column)
-            permissive_element = self.vectors[permissive_column][permissive_line]
+            permissive_column, permissive_line, permissive_element = self.__find_permissive_element(a_j)
 
             new_basis_content[permissive_line] = permissive_column
             self.basis[permissive_line] = self.func_vector[permissive_column]
 
             new_b = np.full(self.b.shape, np.inf)
             new_b[permissive_line] = self.b[permissive_line] / permissive_element
+            for index, value in enumerate(new_b):
+                if value != np.inf:
+                    continue
+
+                subtrahend = (self.b[permissive_line] * self.vectors[permissive_column, index]) / permissive_element
+                new_b[index] = self.b[index] - subtrahend
 
             new_vectors = np.full(self.vectors.shape, np.inf)
             for index, value in enumerate(self.vectors[:, permissive_line]):
@@ -64,13 +97,6 @@ class SimplexSolutionMethod:
             for index, line_number in enumerate(new_basis_content):
                 new_vectors[line_number, :] = 0
                 new_vectors[line_number, index] = 1
-
-            for index, value in enumerate(new_b):
-                if value != np.inf:
-                    continue
-
-                subtrahend = (self.b[permissive_line] * self.vectors[permissive_column, index]) / permissive_element
-                new_b[index] = self.b[index] - subtrahend
 
             for index_cl, line in enumerate(new_vectors):
                 for index_ln, value in enumerate(line):
@@ -90,12 +116,9 @@ class SimplexSolutionMethod:
             self.b = new_b
             self.vectors = new_vectors
 
-        non_zero_indexes = np.setdiff1d(new_basis_content, self.basis_content)
-        answer = np.zeros(self.func_vector.size - self.basis.size)
-        answer[non_zero_indexes] = self.b[non_zero_indexes]
-        return b_j, answer
+        return self.__make_answer(b_j + val, new_basis_content)
 
-    def solve_max(self) -> (np.array, float):
+    def solve_max(self, val: float) -> (np.array, float):
         new_basis_content = np.copy(self.basis_content)
 
         b_j = np.dot(self.basis, self.b)
@@ -103,18 +126,21 @@ class SimplexSolutionMethod:
         for index, vector in enumerate(self.vectors):
             a_j = np.append(a_j, np.dot(self.basis, vector) - self.func_vector[index])
 
-        # Difference between min and max is only in these 2 lines, but im too lazy to make to separate it :)
-        while np.any(a_j < 0):
-            permissive_column = int(np.argmin(a_j))
         # TODO: remove code duplication
-            permissive_line = self.__find_permissive_line(permissive_column)
-            permissive_element = self.vectors[permissive_column][permissive_line]
+        while np.any(a_j < 0):
+            permissive_column, permissive_line, permissive_element = self.__find_permissive_element(a_j)
 
             new_basis_content[permissive_line] = permissive_column
             self.basis[permissive_line] = self.func_vector[permissive_column]
 
             new_b = np.full(self.b.shape, np.inf)
             new_b[permissive_line] = self.b[permissive_line] / permissive_element
+            for index, value in enumerate(new_b):
+                if value != np.inf:
+                    continue
+
+                subtrahend = (self.b[permissive_line] * self.vectors[permissive_column, index]) / permissive_element
+                new_b[index] = self.b[index] - subtrahend
 
             new_vectors = np.full(self.vectors.shape, np.inf)
             for index, value in enumerate(self.vectors[:, permissive_line]):
@@ -123,13 +149,6 @@ class SimplexSolutionMethod:
             for index, line_number in enumerate(new_basis_content):
                 new_vectors[line_number, :] = 0
                 new_vectors[line_number, index] = 1
-
-            for index, value in enumerate(new_b):
-                if value != np.inf:
-                    continue
-
-                subtrahend = (self.b[permissive_line] * self.vectors[permissive_column, index]) / permissive_element
-                new_b[index] = self.b[index] - subtrahend
 
             for index_cl, line in enumerate(new_vectors):
                 for index_ln, value in enumerate(line):
@@ -149,16 +168,16 @@ class SimplexSolutionMethod:
             self.b = new_b
             self.vectors = new_vectors
 
-        non_zero_indexes = np.setdiff1d(new_basis_content, self.basis_content)
-        answer = np.zeros(self.func_vector.size - self.basis.size)
-        answer[non_zero_indexes] = self.b[non_zero_indexes]
-        return b_j, answer
+        return self.__make_answer(b_j + val, new_basis_content)
 
-    def solve(self) -> (np.array, float):
-        if self.solution_aim == SolutionAim.MIN:
-            return self.solve_min()
-
-        return self.solve_max()
+    def solve(self, val: float) -> (np.array, float):
+        match self.solution_aim:
+            case SolutionAim.MIN:
+                return self.solve_min(val)
+            case SolutionAim.MAX:
+                return self.solve_max(val)
+            case _:
+                raise ValueError("Unknown solution aim")
 
 
 if __name__ == '__main__':

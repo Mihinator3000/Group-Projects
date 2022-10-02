@@ -30,13 +30,10 @@ class Restriction:
         if self.__check_incorrect_data():
             raise ValueError("Incorrect data")
 
-        if self.value < 0:
-            self.coefficients *= -1
-            self.value *= -1
-            if self.restriction_type == RestrictionType.GREATER:
-                self.restriction_type = RestrictionType.LESS
-            elif self.restriction_type == RestrictionType.LESS:
-                self.restriction_type = RestrictionType.GREATER
+        if self.restriction_type == RestrictionType.GREATER:
+            self.coefficients = -self.coefficients
+            self.value = -self.value
+            self.restriction_type = RestrictionType.LESS
 
 
 if __name__ == '__main__':

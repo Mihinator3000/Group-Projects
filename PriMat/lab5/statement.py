@@ -6,7 +6,7 @@ import restriction as r
 class Statement:
     def __init__(self,
                  func_coefficients: np.array,
-                 restrictions: list,
+                 restrictions: np.array,
                  value: float = 0,
                  input_basis: np.array = None):
 
@@ -21,14 +21,25 @@ class Statement:
     def __restrictions_count(self) -> int:
         return len(self.restrictions)
 
-    def __equal_restrictions_count(self) -> int:
-        return len([re for re in self.restrictions if re.restriction_type == r.RestrictionType.EQUAL])
+    def __transform_equal_equations(self) -> None:
+        new_restrictions = np.array([])
+        for index, restriction in enumerate(self.restrictions):
+            if restriction.restriction_type != r.RestrictionType.EQUAL:
+                new_restrictions = np.append(new_restrictions, restriction)
+                continue
+
+            new_r_less = r.Restriction(restriction.coefficients, r.RestrictionType.LESS, restriction.value)
+            new_r_greater = r.Restriction(restriction.coefficients, r.RestrictionType.GREATER, restriction.value)
+            new_restrictions = np.append(new_restrictions, np.array([new_r_less, new_r_greater]))
+
+        self.restrictions = np.copy(new_restrictions)
 
     def to_canonical(self) -> None:
+        self.__transform_equal_equations()
         for restriction in self.restrictions:
             restriction.to_canonical()
 
-    def create_statement_vectors(self) -> (np.array, np.array, np.array):
+    def create_statement(self) -> (np.array, np.array, np.array, float):
         self.to_canonical()
         func_vector = np.concatenate((self.func_coefficients, np.zeros(self.__restrictions_count())))
         b = np.array([])
@@ -38,20 +49,20 @@ class Statement:
             additional_vector = np.zeros(self.__restrictions_count())
             b = np.append(b, restriction.value)
             if restriction.restriction_type == r.RestrictionType.GREATER:
-                additional_vector = np.zeros(self.__restrictions_count())
                 additional_vector[index] = -1
             elif restriction.restriction_type == r.RestrictionType.LESS:
-                additional_vector = np.zeros(self.__restrictions_count())
                 additional_vector[index] = 1
 
             vectors.append(np.concatenate((restriction.coefficients, additional_vector)))
 
         vectors = np.asarray(vectors)
         vectors_transpose = vectors.T
-        return func_vector, b, vectors_transpose
+
+        return func_vector, b, vectors_transpose, self.value
 
     def create_basis(self) -> np.array:
         if self.input_basis is not None:
+            basis = np.concatenate((self.input_basis, ))
             return self.input_basis
 
         return np.zeros(self.__restrictions_count())
@@ -59,7 +70,7 @@ class Statement:
     def create_basis_content(self) -> np.array:
         return np.arange(
             self.func_coefficients.size,
-            self.func_coefficients.size + self.__restrictions_count() - self.__equal_restrictions_count(),
+            self.func_coefficients.size + self.__restrictions_count(),
             step=1)
 
 
