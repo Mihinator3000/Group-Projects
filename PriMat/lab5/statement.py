@@ -16,7 +16,7 @@ class Statement:
         self.input_basis = input_basis
 
     def __str__(self):
-        return f"{self.func_coefficients} {self.restrictions} {self.value}"
+        return f"{self.func_coefficients} {self.restrictions} {self.value} {self.input_basis}"
 
     def __restrictions_count(self) -> int:
         return len(self.restrictions)
@@ -62,8 +62,8 @@ class Statement:
 
     def create_basis(self) -> np.array:
         if self.input_basis is not None:
-            basis = np.concatenate((self.input_basis, ))
-            return self.input_basis
+            basis = np.concatenate((self.input_basis, np.zeros(self.__restrictions_count() - self.input_basis.size)))
+            return basis
 
         return np.zeros(self.__restrictions_count())
 
