@@ -38,8 +38,7 @@ class FileInputParser:
             restrictions = []
             for _ in range(restrictions_count):
                 restriction_data = f_in.readline()
-                restriction = self.__parse_expression_to_vector(restriction_data, variables_count)
-                restrictions.append(restriction)
+                restrictions.append(self.__parse_expression_to_vector(restriction_data, variables_count))
 
             basis = None
             if override_basis:
