@@ -24,51 +24,6 @@ class SimplexSolutionMethod:
         self.basis = basis
         self.basis_content = basis_content
 
-    def __find_permissive_line(self, permissive_column: int) -> int:
-        permissive_line = -1
-        min_value = np.inf
-
-        for index, value in enumerate(self.vectors[permissive_column]):
-            if value <= 0:
-                continue
-
-            divided_value = self.b[index] / value
-            if divided_value < min_value:
-                min_value = divided_value
-                permissive_line = index
-
-        return permissive_line
-
-    def __find_permissive_element(self, a_j: np.array) -> (int, int, int):
-        permissive_line = -1
-        permissive_column = -1
-
-        permissive_lines = np.where(self.b < 0)[0]
-        if permissive_lines.size != 0:
-            permissive_line = permissive_lines[0]
-            permissive_column = np.where(self.vectors[:, permissive_line] != 0)[0][0]
-            return permissive_column, permissive_line, self.vectors[permissive_column][permissive_line]
-
-        match self.solution_aim:
-            case SolutionAim.MIN:
-                permissive_column = int(np.argmax(a_j))
-            case SolutionAim.MAX:
-                permissive_column = int(np.argmin(a_j))
-            case _:
-                raise ValueError("Unknown solution aim")
-
-        permissive_line = self.__find_permissive_line(permissive_column)
-        return permissive_column, permissive_line, self.vectors[permissive_column][permissive_line]
-
-    def __make_answer(self, result: float, new_basis_content: np.array) -> (float, np.array):
-        non_zero_indexes = np.isin(new_basis_content, self.basis_content, invert=True)
-        answer = np.zeros(self.func_vector.size - self.basis.size)
-        for index, value in enumerate(non_zero_indexes):
-            if value:
-                answer[new_basis_content[index]] = self.b[index]
-
-        return result, answer
-
     def solve(self, val: float) -> (np.array, float):
         new_basis_content = np.copy(self.basis_content)
 
@@ -77,7 +32,7 @@ class SimplexSolutionMethod:
         for index, vector in enumerate(self.vectors):
             a_j = np.append(a_j, np.dot(self.basis, vector) - self.func_vector[index])
 
-        while (self.solution_aim == SolutionAim.MIN) == np.any(a_j > 0):
+        while self.__check_solution_is_invalid(a_j):
             permissive_column, permissive_line, permissive_element = self.__find_permissive_element(a_j)
 
             new_basis_content[permissive_line] = permissive_column
@@ -119,6 +74,54 @@ class SimplexSolutionMethod:
             self.vectors = new_vectors
 
         return self.__make_answer(b_j + val, new_basis_content)
+
+    def __check_solution_is_invalid(self, a_j: np.array) -> bool:
+        return np.any(a_j > 0) if self.solution_aim == SolutionAim.MIN else np.any(a_j < 0)
+
+    def __find_permissive_line(self, permissive_column: int) -> int:
+        permissive_line = -1
+        min_value = np.inf
+
+        for index, value in enumerate(self.vectors[permissive_column]):
+            if value <= 0:
+                continue
+
+            divided_value = self.b[index] / value
+            if divided_value < min_value:
+                min_value = divided_value
+                permissive_line = index
+
+        return permissive_line
+
+    def __find_permissive_element(self, a_j: np.array) -> (int, int, int):
+        permissive_line = -1
+        permissive_column = -1
+
+        permissive_lines = np.where(self.b < 0)[0]
+        if permissive_lines.size != 0:
+            permissive_line = permissive_lines[0]
+            permissive_column = np.where(self.vectors[:, permissive_line] != 0)[0][0]
+            return permissive_column, permissive_line, self.vectors[permissive_column][permissive_line]
+
+        match self.solution_aim:
+            case SolutionAim.MIN:
+                permissive_column = int(np.argmax(a_j))
+            case SolutionAim.MAX:
+                permissive_column = int(np.argmin(a_j))
+            case _:
+                raise ValueError("Unknown solution aim")
+
+        permissive_line = self.__find_permissive_line(permissive_column)
+        return permissive_column, permissive_line, self.vectors[permissive_column][permissive_line]
+
+    def __make_answer(self, result: float, new_basis_content: np.array) -> (float, np.array):
+        non_zero_indexes = np.isin(new_basis_content, self.basis_content, invert=True)
+        answer = np.zeros(self.func_vector.size - self.basis.size)
+        for index, value in enumerate(non_zero_indexes):
+            if value:
+                answer[new_basis_content[index]] = round(self.b[index], 6)
+
+        return round(result, 6), answer
 
 
 if __name__ == '__main__':
