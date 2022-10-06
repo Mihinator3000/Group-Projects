@@ -21,7 +21,7 @@ class Statement:
     def __restrictions_count(self) -> int:
         return len(self.restrictions)
 
-    def __transform_equal_equations(self) -> None:
+    def __transform_equations(self) -> None:
         new_restrictions = np.array([])
         for index, restriction in enumerate(self.restrictions):
             if restriction.restriction_type != r.RestrictionType.EQUAL:
@@ -35,7 +35,7 @@ class Statement:
         self.restrictions = np.copy(new_restrictions)
 
     def to_canonical(self) -> None:
-        self.__transform_equal_equations()
+        self.__transform_equations()
         for restriction in self.restrictions:
             restriction.to_canonical()
 
