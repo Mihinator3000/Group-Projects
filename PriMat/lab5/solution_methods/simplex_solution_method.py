@@ -12,14 +12,14 @@ class SimplexSolutionMethod:
     def __init__(self,
                  solution_aim: SolutionAim,
                  func_vector: np.array,
-                 b: np.array,
+                 right_hand_side: np.array,
                  vectors: np.array,
                  basis: np.array,
                  basis_content: np.array):
 
         self.solution_aim = solution_aim
         self.func_vector = func_vector
-        self.b = b
+        self.right_hand_side = right_hand_side
         self.vectors = vectors
         self.basis = basis
         self.basis_content = basis_content
@@ -27,7 +27,7 @@ class SimplexSolutionMethod:
     def solve(self, val: float) -> (np.array, float):
         new_basis_content = np.copy(self.basis_content)
 
-        b_j = np.dot(self.basis, self.b)
+        b_j = np.dot(self.basis, self.right_hand_side)
         a_j = np.array([])
         for index, vector in enumerate(self.vectors):
             a_j = np.append(a_j, np.dot(self.basis, vector) - self.func_vector[index])
@@ -38,14 +38,15 @@ class SimplexSolutionMethod:
             new_basis_content[permissive_line] = permissive_column
             self.basis[permissive_line] = self.func_vector[permissive_column]
 
-            new_b = np.full(self.b.shape, np.inf)
-            new_b[permissive_line] = self.b[permissive_line] / permissive_element
-            for index, value in enumerate(new_b):
+            new_right_hand_side = np.full(self.right_hand_side.shape, np.inf)
+            new_right_hand_side[permissive_line] = self.right_hand_side[permissive_line] / permissive_element
+            for index, value in enumerate(new_right_hand_side):
                 if value != np.inf:
                     continue
 
-                subtrahend = (self.b[permissive_line] * self.vectors[permissive_column, index]) / permissive_element
-                new_b[index] = self.b[index] - subtrahend
+                multiplier = self.right_hand_side[permissive_line] * self.vectors[permissive_column, index]
+                subtrahend = multiplier / permissive_element
+                new_right_hand_side[index] = self.right_hand_side[index] - subtrahend
 
             new_vectors = np.full(self.vectors.shape, np.inf)
             for index, value in enumerate(self.vectors[:, permissive_line]):
@@ -65,12 +66,12 @@ class SimplexSolutionMethod:
 
                     new_vectors[index_cl, index_ln] = self.vectors[index_cl, index_ln] - subtrahend
 
-            b_j = np.dot(self.basis, new_b)
+            b_j = np.dot(self.basis, new_right_hand_side)
             a_j = np.array([])
             for index, vector in enumerate(new_vectors):
                 a_j = np.append(a_j, np.dot(self.basis, vector) - self.func_vector[index])
 
-            self.b = new_b
+            self.right_hand_side = new_right_hand_side
             self.vectors = new_vectors
 
         return self.__make_answer(b_j + val, new_basis_content)
@@ -86,7 +87,7 @@ class SimplexSolutionMethod:
             if value <= 0:
                 continue
 
-            divided_value = self.b[index] / value
+            divided_value = self.right_hand_side[index] / value
             if divided_value < min_value:
                 min_value = divided_value
                 permissive_line = index
@@ -97,7 +98,7 @@ class SimplexSolutionMethod:
         permissive_line = -1
         permissive_column = -1
 
-        permissive_lines = np.where(self.b < 0)[0]
+        permissive_lines = np.where(self.right_hand_side < 0)[0]
         if permissive_lines.size != 0:
             permissive_line = permissive_lines[0]
             permissive_column = np.where(self.vectors[:, permissive_line] != 0)[0][0]
@@ -119,10 +120,9 @@ class SimplexSolutionMethod:
         answer = np.zeros(self.func_vector.size - self.basis.size)
         for index, value in enumerate(non_zero_indexes):
             if value:
-                answer[new_basis_content[index]] = round(self.b[index], 6)
+                answer[new_basis_content[index]] = round(self.right_hand_side[index], 6)
+
+        if np.NAN in answer:
+            raise ValueError("Extremum is not defined")
 
         return round(result, 6), answer
-
-
-if __name__ == '__main__':
-    pass

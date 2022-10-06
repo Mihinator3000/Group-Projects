@@ -1,10 +1,10 @@
 import numpy as np
 import re
 
-import restriction as r
-import statement as s
+import lab_1.entities.restriction as r
+import lab_1.entities.statement as s
 
-from simplex_solution_method import SolutionAim
+from lab_1.solution_methods.simplex_solution_method import SolutionAim
 
 
 class FileInputParser:
@@ -78,7 +78,3 @@ class FileInputParser:
     @staticmethod
     def __parse_solution_aim(solution_aim: str) -> SolutionAim:
         return SolutionAim[SolutionAim(solution_aim).name]
-
-
-if __name__ == '__main__':
-    pass

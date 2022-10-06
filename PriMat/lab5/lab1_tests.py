@@ -1,26 +1,29 @@
 import unittest
 import numpy as np
 
-import restriction as r
-import statement as st
-import simplex_solution_method as ssm
-import file_input_parser as fip
+import lab_1.entities.restriction as r
+import lab_1.entities.statement as s
+import lab_1.solution_methods.simplex_solution_method as ssm
+import lab_1.input_parsers.file_input_parser as fip
 
 
-class MyTestCase(unittest.TestCase):
+class TestLab1(unittest.TestCase):
     # TODO: add test cases from statements & test_cases.txt
+    def setUp(self) -> None:
+        np.seterr(all="ignore")
+
     def test_case_1(self):
         parser = fip.FileInputParser("input.txt")
         statement, solution_aim = parser.create_statement()
 
-        func_vector, b, vectors, value = statement.create_statement()
+        func_vector, right_hand_side, vectors, value = statement.create_statement()
         basis = statement.create_basis()
         basis_content = statement.create_basis_content()
 
         simplex_solution_method = ssm.SimplexSolutionMethod(
             solution_aim,
             func_vector,
-            b,
+            right_hand_side,
             vectors,
             basis,
             basis_content)
@@ -36,17 +39,17 @@ class MyTestCase(unittest.TestCase):
         r_1 = r.Restriction(np.array([1, 2]), r.RestrictionType.LESS, 7)
         r_2 = r.Restriction(np.array([2, 1]), r.RestrictionType.LESS, 8)
         r_3 = r.Restriction(np.array([0, 1]), r.RestrictionType.LESS, 3)
-        statement = st.Statement(np.array([-3, -2]), [r_1, r_2, r_3])
+        statement = s.Statement(np.array([-3, -2]), [r_1, r_2, r_3])
         solution_aim = ssm.SolutionAim.MIN
 
-        func_vector, b, vectors, value = statement.create_statement()
+        func_vector, right_hand_side, vectors, value = statement.create_statement()
         basis = statement.create_basis()
         basis_content = statement.create_basis_content()
 
         simplex_solution_method = ssm.SimplexSolutionMethod(
             solution_aim,
             func_vector,
-            b,
+            right_hand_side,
             vectors,
             basis,
             basis_content)
@@ -62,17 +65,17 @@ class MyTestCase(unittest.TestCase):
         r_1 = r.Restriction(np.array([3, 2, 5]), r.RestrictionType.LESS, 18)
         r_2 = r.Restriction(np.array([4, 2, 3]), r.RestrictionType.LESS, 16)
         r_3 = r.Restriction(np.array([2, 1, 1]), r.RestrictionType.GREATER, 4)
-        statement = st.Statement(np.array([3, 2, 4]), [r_1, r_2, r_3])
+        statement = s.Statement(np.array([3, 2, 4]), [r_1, r_2, r_3])
         solution_aim = ssm.SolutionAim.MAX
 
-        func_vector, b, vectors, value = statement.create_statement()
+        func_vector, right_hand_side, vectors, value = statement.create_statement()
         basis = statement.create_basis()
         basis_content = statement.create_basis_content()
 
         simplex_solution_method = ssm.SimplexSolutionMethod(
             solution_aim,
             func_vector,
-            b,
+            right_hand_side,
             vectors,
             basis,
             basis_content)

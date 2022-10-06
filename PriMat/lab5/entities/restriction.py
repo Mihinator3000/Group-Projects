@@ -23,8 +23,12 @@ class Restriction:
         return f"{self.coefficients} {self.restriction_type.value} {self.value}"
 
     def __check_incorrect_data(self) -> bool:
-        return ((np.all(self.coefficients == 0) and self.value == 0) or
-                (np.all(self.coefficients > 0) and self.value < 0) and self.restriction_type == RestrictionType.LESS)
+        is_blank = np.all(self.coefficients == 0) and self.value == 0
+        is_incorrect = (np.all(self.coefficients > 0)
+                        and self.value < 0
+                        and self.restriction_type == RestrictionType.LESS)
+
+        return is_blank or is_incorrect
 
     def to_canonical(self) -> None:
         if self.__check_incorrect_data():
@@ -34,7 +38,3 @@ class Restriction:
             self.coefficients = -self.coefficients
             self.value = -self.value
             self.restriction_type = RestrictionType.LESS
-
-
-if __name__ == '__main__':
-    pass

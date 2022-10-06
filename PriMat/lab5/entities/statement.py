@@ -1,6 +1,6 @@
 import numpy as np
 
-import restriction as r
+import lab_1.entities.restriction as r
 
 
 class Statement:
@@ -42,23 +42,19 @@ class Statement:
     def create_statement(self) -> (np.array, np.array, np.array, float):
         self.to_canonical()
         func_vector = np.concatenate((self.func_coefficients, np.zeros(self.__restrictions_count())))
-        b = np.array([])
+        right_hand_side = np.array([])
         vectors = []
 
         for index, restriction in enumerate(self.restrictions):
             additional_vector = np.zeros(self.__restrictions_count())
-            b = np.append(b, restriction.value)
-            if restriction.restriction_type == r.RestrictionType.GREATER:
-                additional_vector[index] = -1
-            elif restriction.restriction_type == r.RestrictionType.LESS:
-                additional_vector[index] = 1
-
+            right_hand_side = np.append(right_hand_side, restriction.value)
+            additional_vector[index] = -1 if restriction.restriction_type == r.RestrictionType.GREATER else 1
             vectors.append(np.concatenate((restriction.coefficients, additional_vector)))
 
         vectors = np.asarray(vectors)
         vectors_transpose = vectors.T
 
-        return func_vector, b, vectors_transpose, self.value
+        return func_vector, right_hand_side, vectors_transpose, self.value
 
     def create_basis(self) -> np.array:
         if self.input_basis is not None:
@@ -72,7 +68,3 @@ class Statement:
             self.func_coefficients.size,
             self.func_coefficients.size + self.__restrictions_count(),
             step=1)
-
-
-if __name__ == '__main__':
-    pass
