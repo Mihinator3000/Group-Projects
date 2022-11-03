@@ -1,10 +1,10 @@
 import unittest
 import numpy as np
 
-import lab_1.entities.restriction as r
-import lab_1.entities.statement as s
-import lab_1.solution_methods.simplex_solution_method as ssm
-import lab_1.input_parsers.file_input_parser as fip
+import entities.restriction as r
+import entities.statement as s
+import solution_methods.simplex_solution_method as ssm
+import input_parsers.file_input_parser as fip
 
 
 class TestLab1(unittest.TestCase):

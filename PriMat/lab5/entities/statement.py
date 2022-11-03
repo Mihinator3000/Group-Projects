@@ -1,6 +1,6 @@
 import numpy as np
 
-import lab_1.entities.restriction as r
+import entities.restriction as r
 
 
 class Statement:

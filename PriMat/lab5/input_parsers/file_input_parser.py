@@ -1,10 +1,10 @@
 import numpy as np
 import re
 
-import lab_1.entities.restriction as r
-import lab_1.entities.statement as s
+import entities.restriction as r
+import entities.statement as s
 
-from lab_1.solution_methods.simplex_solution_method import SolutionAim
+from solution_methods.simplex_solution_method import SolutionAim
 
 
 class FileInputParser:
