@@ -117,6 +117,37 @@ class Tests(unittest.TestCase):
         self.assertEqual(-10, func_extremum)
         self.assertTrue(np.array_equal(np.array([4, 0, 0, 1, 7]), extremum_coordinates))
 
+    def test_case_11(self):
+        r_1 = r.Restriction(np.array([1, 1, -1, -10]), r.RestrictionType.EQUAL, 0)
+        r_2 = r.Restriction(np.array([1, 14, 10, -10]), r.RestrictionType.EQUAL, 11)
+        statement = s.Statement(np.array([-1, 4, -3, 10]), [r_1, r_2])
+        solution_aim = ssm.SolutionAim.MIN
+
+        func_extremum, extremum_coordinates = Tests.simplex_solution_method_solve(statement, solution_aim)
+        self.assertEqual(-4, func_extremum)
+        self.assertTrue(np.array_equal(np.array([1, 0, 1, 0]), extremum_coordinates))
+
+    def test_case_12(self):
+        r_1 = r.Restriction(np.array([1, 3, 3, 1]), r.RestrictionType.LESS, 3)
+        r_2 = r.Restriction(np.array([2, 0, 3, -1]), r.RestrictionType.LESS, 4)
+        statement = s.Statement(np.array([-1, 5, 1, -1]), [r_1, r_2])
+        solution_aim = ssm.SolutionAim.MIN
+
+        func_extremum, extremum_coordinates = Tests.simplex_solution_method_solve(statement, solution_aim)
+        self.assertEqual(-3, func_extremum)
+        self.assertTrue(np.array_equal(np.array([2.333333, 0, 0, 0.666667]), extremum_coordinates))
+
+    def test_case_13(self):
+        r_1 = r.Restriction(np.array([3, 1, 1, 1, -2]), r.RestrictionType.EQUAL, 10)
+        r_2 = r.Restriction(np.array([6, 1, 2, 3, -4]), r.RestrictionType.EQUAL, 20)
+        r_3 = r.Restriction(np.array([10, 1, 3, 6, -7]), r.RestrictionType.EQUAL, 30)
+        statement = s.Statement(np.array([-1, -1, 1, -1, 2]), [r_1, r_2, r_3])
+        solution_aim = ssm.SolutionAim.MIN
+
+        func_extremum, extremum_coordinates = Tests.simplex_solution_method_solve(statement, solution_aim)
+        self.assertEqual(10, func_extremum)
+        self.assertTrue(np.array_equal(np.array([0, 0, 10, 0, 0]), extremum_coordinates))
+
     @staticmethod
     def simplex_solution_method_solve(statement: s.Statement, solution_aim: ssm.SolutionAim) -> (float, np.array):
         func_vector, right_hand_side, vectors, value = statement.create_statement()
