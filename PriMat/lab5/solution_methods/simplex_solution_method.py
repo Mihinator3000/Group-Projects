@@ -9,6 +9,9 @@ class SolutionAim(Enum):
 
 
 class SimplexSolutionMethod:
+
+    MAX_ITERATION_COUNT = 1000
+
     def __init__(self,
                  solution_aim: SolutionAim,
                  func_vector: np.array,
@@ -31,6 +34,8 @@ class SimplexSolutionMethod:
         a_j = np.array([])
         for index, vector in enumerate(self.vectors):
             a_j = np.append(a_j, np.dot(self.basis, vector) - self.func_vector[index])
+
+        iteration_count = 0
 
         while self.__check_solution_is_invalid(a_j):
             permissive_column, permissive_line, permissive_element = self.__find_permissive_element(a_j)
@@ -74,6 +79,10 @@ class SimplexSolutionMethod:
             self.right_hand_side = new_right_hand_side
             self.vectors = new_vectors
 
+            if iteration_count == SimplexSolutionMethod.MAX_ITERATION_COUNT:
+                raise ValueError("Extremum is not defined")
+            iteration_count += 1
+
         return self.__make_answer(b_j + val, new_basis_content)
 
     def __check_solution_is_invalid(self, a_j: np.array) -> bool:
@@ -95,9 +104,6 @@ class SimplexSolutionMethod:
         return permissive_line
 
     def __find_permissive_element(self, a_j: np.array) -> (int, int, int):
-        permissive_line = -1
-        permissive_column = -1
-
         permissive_lines = np.where(self.right_hand_side < 0)[0]
         if permissive_lines.size != 0:
             permissive_line = permissive_lines[0]
@@ -121,8 +127,5 @@ class SimplexSolutionMethod:
         for index, value in enumerate(non_zero_indexes):
             if value:
                 answer[new_basis_content[index]] = round(self.right_hand_side[index], 6)
-
-        if np.NAN in answer:
-            raise ValueError("Extremum is not defined")
 
         return round(result, 6), answer
