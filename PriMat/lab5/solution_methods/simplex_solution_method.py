@@ -107,7 +107,7 @@ class SimplexSolutionMethod:
         permissive_lines = np.where(self.right_hand_side < 0)[0]
         if permissive_lines.size != 0:
             permissive_line = permissive_lines[0]
-            permissive_column = np.where(self.vectors[:, permissive_line] != 0)[0][0]
+            permissive_column = np.where(self.vectors[:, permissive_line] < 0)[0][0]
             return permissive_column, permissive_line, self.vectors[permissive_column][permissive_line]
 
         match self.solution_aim:
