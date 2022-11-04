@@ -61,8 +61,8 @@ class Tests(unittest.TestCase):
         solution_aim = ssm.SolutionAim.MIN
 
         func_extremum, extremum_coordinates = Tests.simplex_solution_method_solve(statement, solution_aim)
-        self.assertEqual(-13, func_extremum)
-        self.assertTrue(np.array_equal(np.array([3, 2]), extremum_coordinates))
+        self.assertEqual(-17, func_extremum)
+        self.assertTrue(np.array_equal(np.array([1, 0, 2, 0, 2]), extremum_coordinates))
 
     def test_case_6(self):
         r_1 = r.Restriction(np.array([1, 2]), r.RestrictionType.LESS, 4)
@@ -92,8 +92,8 @@ class Tests(unittest.TestCase):
         solution_aim = ssm.SolutionAim.MIN
 
         func_extremum, extremum_coordinates = Tests.simplex_solution_method_solve(statement, solution_aim)
-        self.assertEqual(-4, func_extremum)
-        self.assertTrue(np.array_equal(np.array([0, 4, 0, 0]), extremum_coordinates))
+        self.assertEqual(-6, func_extremum)
+        self.assertTrue(np.array_equal(np.array([2, 2, 0, 0]), extremum_coordinates))
 
     def test_case_9(self):
         r_1 = r.Restriction(np.array([1, 1, 0, 2, 1]), r.RestrictionType.EQUAL, 5)
@@ -114,8 +114,8 @@ class Tests(unittest.TestCase):
         solution_aim = ssm.SolutionAim.MIN
 
         func_extremum, extremum_coordinates = Tests.simplex_solution_method_solve(statement, solution_aim)
-        self.assertEqual(-11, func_extremum)
-        self.assertTrue(np.array_equal(np.array([3, 2, 4, 0, 0]), extremum_coordinates))
+        self.assertEqual(-10, func_extremum)
+        self.assertTrue(np.array_equal(np.array([4, 0, 0, 1, 7]), extremum_coordinates))
 
     @staticmethod
     def simplex_solution_method_solve(statement: s.Statement, solution_aim: ssm.SolutionAim) -> (float, np.array):
