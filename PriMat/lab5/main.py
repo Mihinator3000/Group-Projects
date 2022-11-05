@@ -6,11 +6,11 @@ import solution_methods.simplex_solution_method as ssm
 
 
 def main():
-    r_1 = r.Restriction(np.array([1, 2]), r.RestrictionType.LESS, 7)
-    r_2 = r.Restriction(np.array([2, 1]), r.RestrictionType.LESS, 8)
-    r_3 = r.Restriction(np.array([0, 1]), r.RestrictionType.LESS, 3)
-    statement = s.Statement(np.array([-3, -2]), [r_1, r_2, r_3])
-    solution_aim = ssm.SolutionAim.MIN
+    r_1 = r.Restriction(np.array([3, 5]), r.RestrictionType.LESS, 30)
+    r_2 = r.Restriction(np.array([4, -3]), r.RestrictionType.LESS, 12)
+    r_3 = r.Restriction(np.array([1, -3]), r.RestrictionType.GREATER, 6)
+    statement = s.Statement(np.array([1, 1]), [r_1, r_2, r_3])
+    solution_aim = ssm.SolutionAim.MAX
 
     func_vector, right_hand_side, vectors, value = statement.create_statement()
     basis = statement.create_basis()
