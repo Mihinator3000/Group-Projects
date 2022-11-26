@@ -9,7 +9,7 @@ class NumericalSolutionMethod(SolutionMethod):
                  number_of_iterations: int = 10 ** 3,
                  tolerance: float = 10 ** -6):
 
-        self.__transition_matrix = transition_matrix.T
+        self.__transition_matrix = transition_matrix
         self.__initial_state = initial_state
         self.__number_of_iterations = number_of_iterations
         self.__tolerance = tolerance
@@ -21,7 +21,7 @@ class NumericalSolutionMethod(SolutionMethod):
         iteration = 0
         current_state = self.__initial_state
         while iteration < self.__number_of_iterations:
-            next_state = self.__transition_matrix @ current_state
+            next_state = current_state @ self.__transition_matrix
             squared_error = np.std(next_state - current_state)
             self.graph_data = np.append(self.graph_data, squared_error)
             if squared_error < self.__tolerance:
