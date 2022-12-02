@@ -1,24 +1,23 @@
 import numpy as np
 import re
 
-import entities.restriction as r
-import entities.statement as s
-
-from solution_methods.simplex_solution_method import SolutionAim
+from lab5.entities.restriction import Restriction, RestrictionType
+from lab5.entities.statement import Statement
+from lab5.solution_methods.simplex_solution_method import SolutionAim
 
 
 class FileInputParser:
     def __init__(self, file_path: str):
         self.file_path = file_path
 
-    def create_statement(self) -> (s.Statement, SolutionAim):
+    def create_statement(self) -> (Statement, SolutionAim):
         function, restrictions, solution_aim, basis = self.__parse_file_to_expression()
 
         func_coefficients = function[0]
         value = function[-1]
-        restrictions = np.array([r.Restriction(*restriction) for restriction in restrictions])
+        restrictions = np.array([Restriction(*restriction) for restriction in restrictions])
 
-        statement = s.Statement(func_coefficients=func_coefficients,
+        statement = Statement(func_coefficients=func_coefficients,
                                 restrictions=restrictions,
                                 value=value,
                                 input_basis=basis)
@@ -48,7 +47,7 @@ class FileInputParser:
             return function, restrictions, solution_aim, basis
 
     @classmethod
-    def __parse_expression_to_vector(cls, expr: str, variables_count: int) -> (np.array, r.RestrictionType, float):
+    def __parse_expression_to_vector(cls, expr: str, variables_count: int) -> (np.array, RestrictionType, float):
         expression = expr.replace("\n", "")
 
         expression_value = float(re.split("[<=|>=|=]", expression)[-1].replace(" ", ""))
@@ -65,13 +64,13 @@ class FileInputParser:
         return expression_coefficients, expression_sign, expression_value
 
     @staticmethod
-    def __get_expression_sign(expr: str) -> r.RestrictionType:
+    def __get_expression_sign(expr: str) -> RestrictionType:
         if "<=" in expr:
-            return r.RestrictionType.LESS
+            return RestrictionType.LESS
         elif ">=" in expr:
-            return r.RestrictionType.GREATER
+            return RestrictionType.GREATER
         elif "=" in expr:
-            return r.RestrictionType.EQUAL
+            return RestrictionType.EQUAL
 
         raise SyntaxError("Expression sign is not found")
 

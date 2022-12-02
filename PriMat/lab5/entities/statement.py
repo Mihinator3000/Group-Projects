@@ -1,6 +1,6 @@
 import numpy as np
 
-import entities.restriction as r
+from lab5.entities.restriction import Restriction, RestrictionType
 
 
 class Statement:
@@ -24,12 +24,12 @@ class Statement:
     def __transform_equations(self) -> None:
         new_restrictions = np.array([])
         for index, restriction in enumerate(self.restrictions):
-            if restriction.restriction_type != r.RestrictionType.EQUAL:
+            if restriction.restriction_type != RestrictionType.EQUAL:
                 new_restrictions = np.append(new_restrictions, restriction)
                 continue
 
-            new_r_less = r.Restriction(restriction.coefficients, r.RestrictionType.LESS, restriction.value)
-            new_r_greater = r.Restriction(restriction.coefficients, r.RestrictionType.GREATER, restriction.value)
+            new_r_less = Restriction(restriction.coefficients, RestrictionType.LESS, restriction.value)
+            new_r_greater = Restriction(restriction.coefficients, RestrictionType.GREATER, restriction.value)
             new_restrictions = np.append(new_restrictions, np.array([new_r_less, new_r_greater]))
 
         self.restrictions = np.copy(new_restrictions)
@@ -48,7 +48,7 @@ class Statement:
         for index, restriction in enumerate(self.restrictions):
             additional_vector = np.zeros(self.__restrictions_count())
             right_hand_side = np.append(right_hand_side, restriction.value)
-            additional_vector[index] = -1 if restriction.restriction_type == r.RestrictionType.GREATER else 1
+            additional_vector[index] = -1 if restriction.restriction_type == RestrictionType.GREATER else 1
             vectors.append(np.concatenate((restriction.coefficients, additional_vector)))
 
         vectors = np.asarray(vectors)
